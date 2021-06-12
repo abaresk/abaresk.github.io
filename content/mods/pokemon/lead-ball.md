@@ -12,7 +12,7 @@ Note that unlike real poison, lead poisoning affects Steel- and Poison-type Pok√
 
 Too easy? Try beating it without using healing items!
 
-# Example
+# Demo
 
 {{< youtube jIPzEzs96Dc >}}
 
