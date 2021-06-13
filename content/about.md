@@ -1,7 +1,11 @@
 ---
 title: "About"
-date: 2021-06-01T22:23:46-04:00
+date: 2021-06-12T22:23:46-04:00
 draft: true
 ---
 
-I guess this page should be about me.
+Hello, welcome to my personal blog! I'm mostly using this as a forum to talk about hobbies and things that I find interesting. For me, that's mostly games and music, but perhaps it will include random other ventures as well. I hope you'll enjoy reading :)
+
+For fun, I like to make mods of older video game titles. I've compiled these under the "Mods" section of the page. Feel free to take a look and play if it suits you.
+
+For anyone interested, the username "Abaresk" comes from an old [song](https://youtu.be/XMVmQAW0CM8) that I enjoy. In fact, when making the abacus logo for this site, I tried to encode in it some notes from the original piece. 
