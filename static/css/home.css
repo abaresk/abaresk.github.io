@@ -3,3 +3,7 @@
   width: 180px;
   height: auto;
 }
+
+.container.home-content {
+    width: auto;
+}
