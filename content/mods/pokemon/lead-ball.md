@@ -15,3 +15,21 @@ Too easy? Try beating it without using healing items!
 {{< youtube 5AdiLe2iaIU >}}
 
 # Downloads
+
+<p>
+    <a href="/downloads/lead-ball/emerald-lead-ball.bps" download>
+    emerald-lead-ball.bps
+    </a>
+</p>
+
+<p>
+    <a href="/downloads/lead-ball/firered-lead-ball.bps" download>
+    firered-lead-ball.bps
+    </a>
+</p>
+
+<p>
+    <a href="/downloads/lead-ball/leafgreen-lead-ball.bps" download>
+    leafgreen-lead-ball.bps
+    </a>
+</p>
