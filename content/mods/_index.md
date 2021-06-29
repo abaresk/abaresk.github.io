@@ -5,5 +5,3 @@ draft: true
 ---
 
 [Pokémon](pokemon)
-
-[Breath of the Wild](botw)
