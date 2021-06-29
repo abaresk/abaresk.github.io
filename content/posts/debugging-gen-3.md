@@ -1,7 +1,7 @@
 ---
 title: "Debugging Gen III Pokémon Games"
 date: 2021-06-17T08:08:57-04:00
-draft: true
+draft: false
 ---
 
 I'd like to quickly share my setup for debugging Gen III Pokémon games. This setup has helped me both understand how undocumented parts of the games work and also create the mods on this site. Hopefully sharing this helps others looking to do the same.

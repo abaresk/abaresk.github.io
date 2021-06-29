@@ -1,7 +1,7 @@
 ---
 title: "Lead Poké Balls"
 date: 2021-06-01T22:39:34-04:00
-draft: true
+draft: false
 ---
 
 Your Poké Balls are made of lead -- your Pokémon are permanently damaged by lead poisoning both in and out of battle. If your Pokémon actually gets poisoned, it takes double damage.

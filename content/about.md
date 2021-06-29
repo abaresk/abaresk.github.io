@@ -1,7 +1,7 @@
 ---
 title: "About"
 date: 2021-06-12T22:23:46-04:00
-draft: true
+draft: false
 ---
 
 Hello, welcome to my personal blog! I'm mostly using this as a forum to talk about hobbies and things that I find interesting. For me, that's mostly games and music, but perhaps it will include random other ventures as well. I hope you'll enjoy reading :)

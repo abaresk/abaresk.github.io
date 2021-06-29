@@ -1,7 +1,7 @@
 ---
 title: "Pokémon"
 date: 2020-06-01T22:39:34-04:00
-draft: true
+draft: false
 ---
 
 ## Challenges
