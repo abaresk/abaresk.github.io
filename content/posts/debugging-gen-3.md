@@ -1,6 +1,6 @@
 ---
 title: "Debugging Gen III Pokémon Games"
-date: 2021-06-17T08:08:57-04:00
+date: 2021-06-29T08:08:57-04:00
 draft: false
 ---
 
@@ -24,9 +24,9 @@ This action is highly streamlined in VSCode -- you simply click next to a line o
 
 ## Watching global variables
 
-The Gen III Pokémon games use many global variables. VSCode allows you to watch these variables -- when the program is paused, you can see their current values. The interface can interprets and displays C data types, allowing you to easily explore how structs and arrays defined in the source code are used.
+The Gen III Pokémon games use many global variables. VSCode allows you to watch these variables -- when the program is paused, you can see their current values. The interface interprets and displays C data types, allowing you to easily explore how structs and arrays defined in the source code are used.
 
-For example, we can watch the internal representation of a trainer card `sTrainerCard->trainerCard`. When the game is paused, we see its value which includes the trainer ID, money, and play time:
+For example, we can watch the internal representation of a trainer card `sTrainerCard->trainerCard`. When the game is paused, we see its value which includes the trainer ID, Pokédex count, and play time:
 
 <br>
 {{<figure src="/posts/debugging-gen-3/watching.png">}}
@@ -34,7 +34,7 @@ For example, we can watch the internal representation of a trainer card `sTraine
 
 ## Setting watchpoints
 
-Sometimes a global variable will change, and you'd like to figure out exactly when it happened. In VSCode, you can set a watchpoint on a global variable. When the value of the variable changes, VSCode pauses the program and shows you the line of code that made the change.
+Sometimes a global variable changes, and you'd like to figure out exactly when it happened. In VSCode, you can set a watchpoint on a global variable. When the value of the variable changes, VSCode pauses the program and shows you the line of code that made the change.
 
 For example, the colon in the trainer card's play time ticks every second. To find out which line causes this, we set a watchpoint in VSCode's debug console:
 
@@ -42,7 +42,7 @@ For example, the colon in the trainer card's play time ticks every second. To fi
 -exec watch sTrainerCard->timeColonInvisible
 ```
 
-Then the game will pause whenver the value of `sTrainerCard->timeColonInvisible` changes:
+Then the game will pause after the value of `sTrainerCard->timeColonInvisible` changes. Here we see line 1566 caused the change:
 
 <br>
 {{<figure src="/posts/debugging-gen-3/watchpoint.png">}}
