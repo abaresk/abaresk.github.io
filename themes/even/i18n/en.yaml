@@ -58,7 +58,7 @@ wordCount:
 
 readingTime:
   one: "{{ .Count }} min read"
-  other: "{{ .Count }} mins read"
+  other: "{{ .Count }} min read"
 
 outdatedInfoWarningBefore:
   other: "[NOTE] Updated "

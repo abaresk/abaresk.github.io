@@ -10,4 +10,4 @@ For fun, I like to make mods of older video game titles. I've compiled these und
 
 For those interested, the username "Abaresk" comes from an old [song](https://youtu.be/XMVmQAW0CM8) that I enjoy. In fact, when making the abacus logo for this site, I tried to encode in it some notes from the original piece.
 
-Feel free to reach out with any questions, comments, or suggestions at abaresk01@gmail.com.
+Please feel free to reach out with any questions, comments, or suggestions at abaresk01@gmail.com.
