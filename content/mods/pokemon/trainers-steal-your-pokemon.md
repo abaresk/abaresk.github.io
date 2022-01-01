@@ -37,15 +37,17 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 </p>
 
 <p>
-    <a href="/downloads/trainers-steal/soft/firered-trainers-steal.bps" download>
-    firered-trainers-steal.bps
-    </a>
-</p>
-
-<p>
-    <a href="/downloads/trainers-steal/soft/leafgreen-trainers-steal.bps" download>
-    leafgreen-trainers-steal.bps
-    </a>
+    <span>
+        <a href="/downloads/trainers-steal/soft/firered-trainers-steal.bps" download>
+        firered-trainers-steal.bps
+        </a>
+    </span>
+    /
+    <span>
+        <a href="/downloads/trainers-steal/soft/leafgreen-trainers-steal.bps" download>
+        leafgreen-trainers-steal.bps
+        </a>
+    </span>
 </p>
 
 ## Hard
@@ -57,15 +59,17 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 </p>
 
 <p>
-    <a href="/downloads/trainers-steal/hard/firered-trainers-steal.bps" download>
-    firered-trainers-steal.bps
-    </a>
-</p>
-
-<p>
-    <a href="/downloads/trainers-steal/hard/leafgreen-trainers-steal.bps" download>
-    leafgreen-trainers-steal.bps
-    </a>
+    <span>
+        <a href="/downloads/trainers-steal/hard/firered-trainers-steal.bps" download>
+        firered-trainers-steal.bps
+        </a>
+    </span>
+    /
+    <span>
+        <a href="/downloads/trainers-steal/hard/leafgreen-trainers-steal.bps" download>
+        leafgreen-trainers-steal.bps
+        </a>
+    </span>
 </p>
 
 ## Hardcore
@@ -77,13 +81,15 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 </p>
 
 <p>
-    <a href="/downloads/trainers-steal/hardcore/firered-trainers-steal.bps" download>
-    firered-trainers-steal.bps
-    </a>
-</p>
-
-<p>
-    <a href="/downloads/trainers-steal/hardcore/leafgreen-trainers-steal.bps" download>
-    leafgreen-trainers-steal.bps
-    </a>
+    <span>
+        <a href="/downloads/trainers-steal/hardcore/firered-trainers-steal.bps" download>
+        firered-trainers-steal.bps
+        </a>
+    </span>
+    /
+    <span>
+        <a href="/downloads/trainers-steal/hardcore/leafgreen-trainers-steal.bps" download>
+        leafgreen-trainers-steal.bps
+        </a>
+    </span>
 </p>
