@@ -22,7 +22,7 @@ At the start of every battle, opponents randomly take a Pokémon from your party
 
 If you hate grinding, visit the clerk in the first town's Poké Mart for some helpful items.
 
-In the 'Hard' and 'Hardcore' modes, there is a randomly determined order in which your Pokémon will be stolen. The next Pokémon to be stolen will appear in black in the party menu. 
+In the 'Hard' and 'Hardcore' modes, there is a randomly determined order in which your Pokémon will be stolen. The next Pokémon to be stolen will appear in black in the party menu.
 
 In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 
