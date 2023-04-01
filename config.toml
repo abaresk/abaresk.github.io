@@ -39,6 +39,11 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   identifier = "mods"
   url = "/mods/"
 [[menu.main]]
+  name = "Music"
+  weight = 20
+  identifier = "music"
+  url = "/music/"
+[[menu.main]]
   name = "About"
   weight = 30
   identifier = "about"
