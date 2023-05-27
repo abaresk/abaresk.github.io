@@ -20,6 +20,8 @@ You can disable notifications when Pokémon faint in the Options menu.
 
 # Downloads
 
+*Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
+
 <p>
     <a href="/downloads/lead-ball/emerald-lead-ball.bps" download>
     emerald-lead-ball.bps

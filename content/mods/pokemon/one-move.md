@@ -12,6 +12,8 @@ Your Pokémon can only know one move at a time. Opponents and wild Pokémon are 
 
 # Downloads
 
+*Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
+
 <p>
     <a href="/downloads/one-move/emerald-one-move.bps" download>
     emerald-one-move.bps
