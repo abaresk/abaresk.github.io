@@ -1,7 +1,7 @@
 import {MersenneTwister} from './mersenne-twister.js';
 
 
-function dateSeed(date) {
+function seedFromDate(date) {
     return date.getFullYear() + date.getMonth() * 0x100 + date.getDate() * 0x10000;
 }
 
@@ -10,7 +10,7 @@ function replaceLogo() {
     logo.src = '/images/earbuds.png';
 }
 
-const rng = new MersenneTwister(dateSeed(new Date()));
+const rng = new MersenneTwister(seedFromDate(new Date()));
 
 if ((rng.random_int() % 32) === 0) {
     replaceLogo();
