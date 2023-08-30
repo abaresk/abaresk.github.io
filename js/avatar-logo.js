@@ -1,7 +1,7 @@
 import {MersenneTwister} from './mersenne-twister.js';
 
 function seedFromDate(date) {
-    return date.getFullYear() + date.getMonth() * 0x100 + date.getDate() * 0x10000;
+    return date.getFullYear() + (date.getMonth() + 1) * 0x100 + date.getDate() * 0x10000;
 }
 
 function replaceLogo() {
