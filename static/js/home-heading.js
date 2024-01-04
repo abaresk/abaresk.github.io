@@ -1,25 +1,11 @@
-const heading = document.getElementById('home-heading');
+import { PcgRandom } from './pcg-random.js';
+import { sameDate, daysSinceEpoch } from './date-util.js';
+import { seedFromDate } from './random-util.js';
+import { sleepTicks } from './tick.js';
 
-// `date1` is the user's local time.
-// `date2` is assumed to be midnight at UTC.
-function sameDate(date1, date2) {
-    return (date1.getMonth() === date2.getUTCMonth() &&
-            date1.getDate() === date2.getUTCDate());
-}
-
-function daysSinceEpoch(date) {
-    const epoch = new Date();
-    epoch.setFullYear(1970);
-    epoch.setMonth(0);
-    epoch.setDate(1);
-    epoch.setHours(0);
-    epoch.setMinutes(0);
-    epoch.setSeconds(0);
-    epoch.setMilliseconds(0);
-
-    const difference = date.getTime() - epoch.getTime();
-    return Math.floor(difference / (1000 * 3600 * 24));
-}
+const clickMedicAnnivEmoticons = [
+    `HUMANBODY NETWORK NAVIGATOR | CLICK SYSTEM 4`,
+];
 
 const pokemonDayEmoticons = [
     'ϞϞ(๑⚈ ․̫ ⚈๑)∩',
@@ -79,7 +65,10 @@ function chooseEmoticonForDay(date, emoticons) {
     return emoticons[daysSinceEpoch(date) % emoticons.length];
 }
 
-function updateHeading(date) {
+function headingText(date) {
+    if (sameDate(date, new Date('2020-01-28'))) {
+        return chooseEmoticonForYear(date, clickMedicAnnivEmoticons);
+    }
     if (sameDate(date, new Date('2020-02-27'))) {
         return chooseEmoticonForYear(date, pokemonDayEmoticons);
     }
@@ -95,4 +84,94 @@ function updateHeading(date) {
     return chooseEmoticonForDay(date, normalHeadings);
 }
 
-heading.innerText = updateHeading(new Date());
+/**
+ * Cipher animation.
+ *
+ * Random cipher text effect, like in Click Medic.
+ * https://youtu.be/pHJ-XM9FD0I&t=770
+*/
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const upperAlphabet = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('');
+const greekAlphabet = 'αβγδεζηθικλμνξοπρστυφχψω'.split('');
+const upperGreekAlphabet = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ'.split('');
+const numbers = '0123456789'.split('');
+const specialChars = '<>()[]!?#;,.áéíóúâêîôûàèìòùãõ¡£¢∞§¶•˚√∫'.split('');
+
+const cipherChars = alphabet.concat(
+    upperAlphabet, greekAlphabet, upperGreekAlphabet, numbers, specialChars);
+
+const MEDIUM_FRAME_DELAY = 2;
+const SLOW_FRAME_DELAY = 3;
+const DAMPENING_FACTOR = 2;
+
+async function cipherHeadingAnimation(rng, headingEl, text) {
+    const randomIdxs = [...Array(text.length).keys()];
+
+    // Energy loading animation (max speed, completely random).
+    for (let i = 0; i < 100; i++) {
+        await sleepTicks(1);
+        await updateCipherHeading(rng, headingEl, text, randomIdxs);
+    }
+
+    // Slowing down (lower speed, completely random).
+    for (let i = 0; i < 25; i++) {
+        await sleepTicks(1);
+
+        // Only update every `MEDIUM_FRAME_DELAY` frames.
+        if (i % MEDIUM_FRAME_DELAY !== 0) continue;
+
+        await updateCipherHeading(rng, headingEl, text, randomIdxs);
+    }
+
+    // Settling animation (lower speed, gradually stabilizing).
+    for (let i = 0; i < text.length * SLOW_FRAME_DELAY * DAMPENING_FACTOR; i++) {
+        await sleepTicks(1);
+
+        // Only update every `SLOW_FRAME_DELAY` frames.
+        if (i % SLOW_FRAME_DELAY !== 0) continue;
+
+        // Keep the same number of random characters for `DAMPENING_FACTOR`
+        // shots. Then use one less random character.
+        if (i % (SLOW_FRAME_DELAY * DAMPENING_FACTOR) === 0) {
+            randomIdxs.splice(rng.next32() % randomIdxs.length, 1);
+        }
+        await updateCipherHeading(rng, headingEl, text, randomIdxs);
+    }
+}
+
+// `randomIdxs` is an array of indices within `text` that should use a random
+// character.
+async function updateCipherHeading(rng, headingEl, text, randomIdxs) {
+    headingEl.innerText = cipherText(rng, text, randomIdxs);
+}
+
+function cipherText(rng, text, randomIdxs) {
+    const idxSet = new Set(randomIdxs);
+    const chars = [];
+    for (let i = 0; i < text.length; i++) {
+        if (idxSet.has(i)) {
+            chars.push(cipherChars[rng.next32() % cipherChars.length]);
+        } else {
+            chars.push(text[i]);
+        }
+    }
+    return chars.join('');
+}
+
+
+function updateHeadingText(date) {
+    const rng = new PcgRandom(seedFromDate(date));
+    const headingEl = document.getElementById('home-heading');
+    const text = headingText(date);
+
+    // Click Medic came out January 28, 1999 in Japan. 68 people are credited on
+    // Click Medic.
+    if (sameDate(date, new Date('2020-01-28') || rng.next32() % 68 === 0)) {
+        cipherHeadingAnimation(rng, headingEl, text);
+    } else {
+        // Otherwise, just update the heading.
+        headingEl.innerText = text;
+    }
+}
+
+updateHeadingText(new Date());
