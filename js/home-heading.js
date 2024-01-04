@@ -139,7 +139,8 @@ async function cipherHeadingAnimation(rng, headingEl, text) {
     }
 }
 
-// `randomIdxs` is an array of indices within `text` that should appear random.
+// `randomIdxs` is an array of indices within `text` that should use a random
+// character.
 async function updateCipherHeading(rng, headingEl, text, randomIdxs) {
     headingEl.innerText = cipherText(rng, text, randomIdxs);
 }
