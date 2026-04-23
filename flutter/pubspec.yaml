@@ -1,0 +1,51 @@
+name: abaresk_blog
+description: "Abaresk's Blog - Flutter web app"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  go_router: ^14.0.0
+  flutter_markdown: ^0.7.4
+  flutter_highlight: ^0.7.0
+  audioplayers: ^6.0.0
+  url_launcher: ^6.3.0
+  google_fonts: ^6.2.1
+  youtube_player_iframe: ^4.0.0
+  markdown: ^7.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  yaml: ^3.1.2
+  args: ^2.5.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/content/manifest.json
+    - assets/content/about.md
+    - assets/content/music.md
+    - assets/content/mods/_index.md
+    - assets/content/mods/pokemon/_index.md
+    - assets/content/mods/pokemon/2-on-1.md
+    - assets/content/mods/pokemon/lead-ball.md
+    - assets/content/mods/pokemon/one-move.md
+    - assets/content/mods/pokemon/trainers-steal-your-pokemon.md
+    - assets/content/posts/debugging-gen-3.md
+    - assets/content/posts/debugging-gen-3/
+    - assets/images/
+    - assets/audio/
+
+  fonts:
+    - family: Chancery
+      fonts:
+        - asset: fonts/chancery/apple-chancery-webfont.woff2
+        - asset: fonts/chancery/apple-chancery-webfont.ttf
