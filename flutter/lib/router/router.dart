@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/home/home_page.dart';
 import '../widgets/posts/posts_page.dart';
@@ -8,26 +9,44 @@ import '../widgets/mods/mod_detail_page.dart';
 import '../widgets/music/music_page.dart';
 import '../widgets/about/about_page.dart';
 
+Page<void> _noTransition(Widget child) =>
+    NoTransitionPage<void>(child: child);
+
 final appRouter = GoRouter(
   routes: [
-    GoRoute(path: '/', builder: (ctx, state) => const HomePage()),
-    GoRoute(path: '/posts', builder: (ctx, state) => const PostsPage()),
+    GoRoute(
+      path: '/',
+      pageBuilder: (ctx, state) => _noTransition(const HomePage()),
+    ),
+    GoRoute(
+      path: '/posts',
+      pageBuilder: (ctx, state) => _noTransition(const PostsPage()),
+    ),
     GoRoute(
       path: '/posts/:slug',
-      builder: (ctx, state) =>
-          PostPage(slug: state.pathParameters['slug']!),
+      pageBuilder: (ctx, state) =>
+          _noTransition(PostPage(slug: state.pathParameters['slug']!)),
     ),
-    GoRoute(path: '/mods', builder: (ctx, state) => const ModsPage()),
+    GoRoute(
+      path: '/mods',
+      pageBuilder: (ctx, state) => _noTransition(const ModsPage()),
+    ),
     GoRoute(
       path: '/mods/pokemon',
-      builder: (ctx, state) => const PokemonIndexPage(),
+      pageBuilder: (ctx, state) => _noTransition(const PokemonIndexPage()),
     ),
     GoRoute(
       path: '/mods/pokemon/:slug',
-      builder: (ctx, state) =>
-          ModDetailPage(slug: state.pathParameters['slug']!),
+      pageBuilder: (ctx, state) =>
+          _noTransition(ModDetailPage(slug: state.pathParameters['slug']!)),
     ),
-    GoRoute(path: '/music', builder: (ctx, state) => const MusicPage()),
-    GoRoute(path: '/about', builder: (ctx, state) => const AboutPage()),
+    GoRoute(
+      path: '/music',
+      pageBuilder: (ctx, state) => _noTransition(const MusicPage()),
+    ),
+    GoRoute(
+      path: '/about',
+      pageBuilder: (ctx, state) => _noTransition(const AboutPage()),
+    ),
   ],
 );

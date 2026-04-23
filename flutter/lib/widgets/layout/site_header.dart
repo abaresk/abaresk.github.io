@@ -78,8 +78,10 @@ class _NarrowHeader extends StatelessWidget {
 class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () => context.go('/'),
+      mouseCursor: SystemMouseCursors.click,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
       child: const Text(
         "Abaresk's Blog",
         style: TextStyle(
@@ -111,17 +113,18 @@ class _NavLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
-      child: GestureDetector(
+      child: InkWell(
         onTap: () => context.go(path),
+        mouseCursor: SystemMouseCursors.click,
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: 'Source Sans Pro',
+            fontFamily: 'Source Sans 3',
             fontSize: 16,
             color: _isActive ? AppTheme.primary : AppTheme.textColor,
             decoration: TextDecoration.none,
-            fontWeight:
-                _isActive ? FontWeight.w600 : FontWeight.w400,
+            fontWeight: _isActive ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ),

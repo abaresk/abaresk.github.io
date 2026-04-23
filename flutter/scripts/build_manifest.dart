@@ -117,35 +117,36 @@ Map<String, dynamic> parseFrontmatter(String content) {
 }
 
 String transformShortcodes(String body) {
-  // {{< youtube ID >}} → [youtube:ID]
+  // {{< youtube ID >}} → fenced code block with language "youtube"
   body = body.replaceAllMapped(
     RegExp(r'\{\{<\s*youtube\s+(\S+)\s*>\}\}'),
-    (m) => '\n\n[youtube:${m.group(1)}]\n\n',
+    (m) => '\n\n```youtube\n${m.group(1)}\n```\n\n',
   );
 
-  // {{< figure src="PATH" >}} (with optional other attrs) → ![figure](PATH)
+  // {{< figure src="PATH" >}} (with optional other attrs) → standard markdown image
   body = body.replaceAllMapped(
     RegExp(r'\{\{<\s*figure\s[^>]*src="([^"]+)"[^>]*>\}\}'),
     (m) => '![figure](${m.group(1)})',
   );
 
-  // <audio controls>...<source src="PATH"...>...</audio> → [audio:PATH]
+  // <audio controls>...<source src="PATH"...>...</audio>
+  // → fenced code block with language "audio"
   body = body.replaceAllMapped(
     RegExp(
       r'<audio[^>]*>.*?<source\s+src="([^"]+)"[^>]*>.*?</audio>',
       dotAll: true,
     ),
-    (m) => '\n\n[audio:${m.group(1)}]\n\n',
+    (m) => '\n\n```audio\n${m.group(1)}\n```\n\n',
   );
 
   // <p>\n    <a href="PATH" download>\n    LABEL\n    </a>\n</p>
-  // → [download:PATH|LABEL]
+  // → fenced code block with language "download"
   body = body.replaceAllMapped(
     RegExp(
       r'<p>\s*<a\s+href="([^"]+)"\s+download>\s*([^\n<]+?)\s*</a>\s*</p>',
       dotAll: true,
     ),
-    (m) => '[download:${m.group(1)}|${m.group(2)!.trim()}]',
+    (m) => '```download\n${m.group(1)}|${m.group(2)!.trim()}\n```',
   );
 
   // Inline HTML: <i>TEXT</i> → *TEXT*, <b>TEXT</b> → **TEXT**, <br> → \n\n

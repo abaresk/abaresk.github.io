@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:web/web.dart' as web;
 import '../../theme/app_theme.dart';
 
 class DownloadLink extends StatelessWidget {
@@ -8,12 +8,21 @@ class DownloadLink extends StatelessWidget {
 
   const DownloadLink({super.key, required this.path, required this.label});
 
+  void _download() {
+    web.HTMLAnchorElement()
+      ..href = path
+      ..download = label
+      ..click();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: InkWell(
-        onTap: () => launchUrl(Uri.parse(path)),
+        onTap: _download,
+        mouseCursor: SystemMouseCursors.click,
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
         child: Text(
           label,
           style: const TextStyle(

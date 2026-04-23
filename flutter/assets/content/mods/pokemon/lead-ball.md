@@ -8,7 +8,9 @@ Too easy? Try beating it without using healing items!
 
 
 
-[youtube:5AdiLe2iaIU]
+```youtube
+5AdiLe2iaIU
+```
 
 
 
@@ -20,8 +22,14 @@ You can disable notifications when Pokémon faint in the Options menu.
 
 *Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
 
-[download:/downloads/lead-ball/emerald-lead-ball.bps|emerald-lead-ball.bps]
+```download
+/downloads/lead-ball/emerald-lead-ball.bps|emerald-lead-ball.bps
+```
 
-[download:/downloads/lead-ball/firered-lead-ball.bps|firered-lead-ball.bps]
+```download
+/downloads/lead-ball/firered-lead-ball.bps|firered-lead-ball.bps
+```
 
-[download:/downloads/lead-ball/leafgreen-lead-ball.bps|leafgreen-lead-ball.bps]
+```download
+/downloads/lead-ball/leafgreen-lead-ball.bps|leafgreen-lead-ball.bps
+```

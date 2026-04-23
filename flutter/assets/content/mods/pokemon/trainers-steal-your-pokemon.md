@@ -12,7 +12,9 @@ At the start of every battle, opponents randomly take a Pokémon from your party
 
 
 
-[youtube:G4ra8Ej8YQ4]
+```youtube
+G4ra8Ej8YQ4
+```
 
 
 
@@ -30,7 +32,9 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 
 ## Soft
 
-[download:/downloads/trainers-steal/soft/emerald-trainers-steal.bps|emerald-trainers-steal.bps]
+```download
+/downloads/trainers-steal/soft/emerald-trainers-steal.bps|emerald-trainers-steal.bps
+```
 
 <p>
     <span>
@@ -48,7 +52,9 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 
 ## Hard
 
-[download:/downloads/trainers-steal/hard/emerald-trainers-steal.bps|emerald-trainers-steal.bps]
+```download
+/downloads/trainers-steal/hard/emerald-trainers-steal.bps|emerald-trainers-steal.bps
+```
 
 <p>
     <span>
@@ -66,7 +72,9 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 
 ## Hardcore
 
-[download:/downloads/trainers-steal/hardcore/emerald-trainers-steal.bps|emerald-trainers-steal.bps]
+```download
+/downloads/trainers-steal/hardcore/emerald-trainers-steal.bps|emerald-trainers-steal.bps
+```
 
 <p>
     <span>

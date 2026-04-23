@@ -28,7 +28,7 @@ class MusicPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Surf',
+                'Surf theme',
                 style: TextStyle(
                   fontSize: 16,
                   fontStyle: FontStyle.italic,

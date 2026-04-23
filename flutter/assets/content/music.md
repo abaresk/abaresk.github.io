@@ -2,6 +2,8 @@
 
 
 
-[audio:/music/surf.wav]
+```audio
+/music/surf.wav
+```
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/rng_service.dart';
+import '../common/blog_image.dart';
 
 class AvatarWidget extends StatefulWidget {
   const AvatarWidget({super.key});
@@ -26,10 +27,9 @@ class _AvatarWidgetState extends State<AvatarWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 30),
-      child: Image.asset(
-        _assetPath,
+      child: SizedBox(
         width: 180,
-        fit: BoxFit.contain,
+        child: BlogImage(assetPath: _assetPath),
       ),
     );
   }

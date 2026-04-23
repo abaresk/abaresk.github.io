@@ -105,9 +105,9 @@ class _CipherHeadingState extends State<CipherHeading>
   bool _animating = false;
 
   // Phase boundaries (in frames)
-  late int _energizingEnd;   // 0 .. 99  (100 frames)
-  late int _slowingEnd;      // 100 .. 124 (25 frames)
-  late int _settlingEnd;     // 125 .. settlingEnd
+  late int _energizingEnd; // 0 .. 99  (100 frames)
+  late int _slowingEnd; // 100 .. 124 (25 frames)
+  late int _settlingEnd; // 125 .. settlingEnd
 
   @override
   void initState() {

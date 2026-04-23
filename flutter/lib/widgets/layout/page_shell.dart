@@ -10,20 +10,22 @@ class PageShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SiteHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  child,
-                  const SiteFooter(),
-                ],
+      body: SelectionArea(
+        child: Column(
+          children: [
+            const SiteHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    child,
+                    const SiteFooter(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
