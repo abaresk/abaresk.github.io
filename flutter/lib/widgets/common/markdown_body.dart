@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
+import 'package:highlight/highlight.dart' show highlight, Node;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/app_theme.dart';
@@ -66,7 +67,7 @@ class BlogMarkdownBody extends StatelessWidget {
           data: text,
           styleSheet: styleSheet,
           extensionSet: md.ExtensionSet.gitHubWeb,
-          builders: {'code': _CodeBlockBuilder()},
+          builders: {'pre': _CodeBlockBuilder()},
           sizedImageBuilder: (config) {
             final path = config.uri.toString();
             if (path.startsWith('/')) {
@@ -113,9 +114,7 @@ class BlogMarkdownBody extends StatelessWidget {
       color: AppTheme.textColor,
       height: 1.6,
     );
-    const codeStyle = TextStyle(
-      fontFamily: 'Consolas',
-      fontFamilyFallback: ['Monaco', 'Menlo', 'monospace'],
+    final codeStyle = GoogleFonts.sourceCodePro(
       fontSize: 14,
       color: AppTheme.codeForeground,
       backgroundColor: AppTheme.codeBackground,
@@ -165,19 +164,31 @@ class BlogMarkdownBody extends StatelessWidget {
   }
 }
 
-// Syntax highlighting for real code blocks inside MarkdownBody segments.
-// Inline code (no class attribute) falls through to the stylesheet style.
+// Handles fenced code blocks (registered for 'pre', which never appears for
+// inline code). Extracts the language from the inner <code class="language-X">
+// element; falls back to plaintext when no language is specified.
 class _CodeBlockBuilder extends MarkdownElementBuilder {
   @override
+  bool isBlockElement() => true;
+
+  @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
-    final className = element.attributes['class'];
-    if (className == null) return null;
-    final language = className.startsWith('language-')
-        ? className.substring(9)
-        : className;
+    md.Element? codeEl;
+    for (final child in element.children ?? []) {
+      if (child is md.Element && child.tag == 'code') {
+        codeEl = child;
+        break;
+      }
+    }
+    final className = codeEl?.attributes['class'];
+    String? language;
+    if (className != null && className.startsWith('language-')) {
+      final lang = className.substring(9);
+      if (lang.isNotEmpty) language = lang;
+    }
     return HighlightedCode(
       code: element.textContent.trim(),
-      language: language.isEmpty ? null : language,
+      language: language,
     );
   }
 }
@@ -188,18 +199,57 @@ class HighlightedCode extends StatelessWidget {
 
   const HighlightedCode({super.key, required this.code, this.language});
 
+  List<TextSpan> _convert(List<Node> nodes, Map<String, TextStyle> theme) {
+    final spans = <TextSpan>[];
+    var currentSpans = spans;
+    final stack = <List<TextSpan>>[];
+
+    void traverse(Node node) {
+      if (node.value != null) {
+        currentSpans.add(node.className == null
+            ? TextSpan(text: node.value)
+            : TextSpan(text: node.value, style: theme[node.className!]));
+      } else if (node.children != null) {
+        final tmp = <TextSpan>[];
+        currentSpans.add(TextSpan(children: tmp, style: theme[node.className!]));
+        stack.add(currentSpans);
+        currentSpans = tmp;
+        for (final n in node.children!) {
+          traverse(n);
+          if (n == node.children!.last) {
+            currentSpans = stack.isEmpty ? spans : stack.removeLast();
+          }
+        }
+      }
+    }
+
+    for (final node in nodes) {
+      traverse(node);
+    }
+    return spans;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return HighlightView(
-      code,
+    final theme = AppTheme.solarizedTheme;
+    final rootStyle = theme['root'];
+    final parsed = highlight.parse(
+      code.replaceAll('\t', '        '),
       language: language ?? 'plaintext',
-      theme: AppTheme.solarizedTheme,
+    );
+
+    return Container(
+      color: rootStyle?.backgroundColor ?? const Color(0xffffffff),
       padding: const EdgeInsets.all(12),
-      textStyle: const TextStyle(
-        fontFamily: 'Consolas',
-        fontFamilyFallback: ['Monaco', 'Menlo', 'monospace'],
-        fontSize: 13.5,
-        height: 1.5,
+      child: SelectableText.rich(
+        TextSpan(
+          style: GoogleFonts.sourceCodePro(
+            fontSize: 13.5,
+            height: 1.5,
+            color: rootStyle?.color ?? const Color(0xff000000),
+          ),
+          children: _convert(parsed.nodes!, theme),
+        ),
       ),
     );
   }

@@ -32,6 +32,22 @@ class ContentService {
         .toList();
   }
 
+  Future<Post?> loadPostMeta(String slug) async {
+    final posts = await loadPosts();
+    for (final p in posts) {
+      if (p.slug == slug) return p;
+    }
+    return null;
+  }
+
+  Future<Post?> loadPokemonModMeta(String slug) async {
+    final mods = await loadPokemonMods();
+    for (final m in mods) {
+      if (m.slug == slug) return m;
+    }
+    return null;
+  }
+
   Future<String> loadPost(String slug) async {
     return rootBundle.loadString('assets/content/posts/$slug.md');
   }

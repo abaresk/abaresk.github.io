@@ -44,8 +44,7 @@ class _BlogImageState extends State<BlogImage> {
 
   Future<void> _resolveSize() async {
     final bytes = await rootBundle.load(widget.assetPath);
-    final codec =
-        await ui.instantiateImageCodec(bytes.buffer.asUint8List());
+    final codec = await ui.instantiateImageCodec(bytes.buffer.asUint8List());
     final frame = await codec.getNextFrame();
     if (mounted) {
       setState(() {
