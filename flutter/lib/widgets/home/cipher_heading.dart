@@ -1,3 +1,4 @@
+import 'package:abaresk_blog/engine/random/pcg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import '../../services/rng_service.dart';
@@ -96,7 +97,7 @@ class _CipherHeadingState extends State<CipherHeading>
     with SingleTickerProviderStateMixin {
   late final String _targetText;
   late String _displayText;
-  late final Pcg32 _rng;
+  late final RandomPcg _rng;
   Ticker? _ticker;
 
   // Animation state
@@ -113,7 +114,7 @@ class _CipherHeadingState extends State<CipherHeading>
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _rng = Pcg32(seedFromDate(now));
+    _rng = RandomPcg(seedFromDate(now));
     _targetText = headingText(now);
     _displayText = _targetText;
 
@@ -121,7 +122,7 @@ class _CipherHeadingState extends State<CipherHeading>
     // The original has a parenthesis bug causing cipher to always run on
     // Jan 28. Intended logic: run on Jan 28, or 1-in-68 chance otherwise.
     final runAnimation =
-        (now.month == 1 && now.day == 28) || _rng.next32() % 68 == 0;
+        (now.month == 1 && now.day == 28) || _rng.randInt(68) == 0;
 
     if (runAnimation) {
       _randomIdxs = List.generate(_targetText.length, (i) => i);
@@ -156,7 +157,7 @@ class _CipherHeadingState extends State<CipherHeading>
       if (localF % _slowFrameDelay == 0 && _randomIdxs.isNotEmpty) {
         // Every SLOW_FRAME_DELAY * DAMPENING_FACTOR frames, drop one index
         if (localF % (_slowFrameDelay * _dampeningFactor) == 0) {
-          final removeAt = _rng.next32() % _randomIdxs.length;
+          final removeAt = _rng.randInt(_randomIdxs.length);
           _randomIdxs.removeAt(removeAt);
         }
         setState(() => _displayText = _cipherText(_randomIdxs));
@@ -174,7 +175,7 @@ class _CipherHeadingState extends State<CipherHeading>
     final chars = <String>[];
     for (var i = 0; i < _targetText.length; i++) {
       if (idxSet.contains(i)) {
-        chars.add(_cipherChars[_rng.next32() % _cipherChars.length]);
+        chars.add(_cipherChars[_rng.randInt(_cipherChars.length)]);
       } else {
         chars.add(_targetText[i]);
       }

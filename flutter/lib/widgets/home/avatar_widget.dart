@@ -1,3 +1,4 @@
+import 'package:abaresk_blog/engine/random/mt19937.dart';
 import 'package:flutter/material.dart';
 import '../../services/rng_service.dart';
 import '../common/blog_image.dart';
@@ -16,11 +17,10 @@ class _AvatarWidgetState extends State<AvatarWidget> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    final mt = MersenneTwister(seedFromDate(now));
-    final showEarbuds = mt.randomInt() % 32 == 0;
-    _assetPath = showEarbuds
-        ? 'assets/images/earbuds.png'
-        : 'assets/images/avatar.png';
+    final mt = RandomMt19937(seedFromDate(now));
+    final showEarbuds = mt.randInt(32) == 0;
+    _assetPath =
+        showEarbuds ? 'assets/images/earbuds.png' : 'assets/images/avatar.png';
   }
 
   @override

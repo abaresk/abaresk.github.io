@@ -138,7 +138,7 @@ packages:
     source: hosted
     version: "7.0.1"
   fixnum:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: fixnum
       sha256: b6dc7065e46c974bc7c5f143080a6764ec7a4be6da1285ececdc37be96de53be
@@ -296,6 +296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+  mt19937:
+    dependency: "direct main"
+    description:
+      name: mt19937
+      sha256: "012197233567d0fbd0c65b047ecd238ee6d5883aa798928cc7152ec8888b9370"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   path:
     dependency: transitive
     description:
@@ -573,6 +581,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  xrandom:
+    dependency: "direct main"
+    description:
+      name: xrandom
+      sha256: d843a7f4004d91b5a0341a28a781fddaf92a5b377f776a06a08e7a9320e95ad3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.2"
   yaml:
     dependency: "direct dev"
     description:
