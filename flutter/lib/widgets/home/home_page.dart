@@ -6,7 +6,7 @@ import '../../theme/app_theme.dart';
 import '../layout/constrained_body.dart';
 import '../layout/page_shell.dart';
 import 'avatar_widget.dart';
-import 'cipher_heading.dart';
+import 'homepage_heading.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Center(child: AvatarWidget()),
-            const Center(child: CipherHeading()),
+            const Center(child: HomepageHeading()),
             const SizedBox(height: 24),
             const Divider(),
             const SizedBox(height: 8),
