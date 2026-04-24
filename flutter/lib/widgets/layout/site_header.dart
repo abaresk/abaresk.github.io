@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import 'constrained_body.dart';
 
@@ -84,7 +85,7 @@ class _Logo extends StatelessWidget {
       mouseCursor: SystemMouseCursors.click,
       overlayColor: WidgetStateProperty.all(Colors.transparent),
       child: const Text(
-        "Abaresk's Blog",
+        "Abaresk",
         style: TextStyle(
           fontFamily: 'Chancery',
           fontSize: 28,
@@ -120,8 +121,7 @@ class _NavLink extends StatelessWidget {
         overlayColor: WidgetStateProperty.all(Colors.transparent),
         child: Text(
           label,
-          style: TextStyle(
-            fontFamily: 'Source Sans 3',
+          style: GoogleFonts.literata(
             fontSize: 16,
             color: _isActive ? AppTheme.primary : AppTheme.textColor,
             decoration: TextDecoration.none,

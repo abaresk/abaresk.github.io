@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../layout/constrained_body.dart';
 import '../layout/page_shell.dart';
@@ -16,14 +17,12 @@ class MusicPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Music',
-                style: TextStyle(
-                  fontFamily: 'Athelas',
-                  fontFamilyFallback: ['Georgia', 'serif'],
+                style: GoogleFonts.literata(
                   fontSize: 32,
                   color: AppTheme.textColor,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 24),

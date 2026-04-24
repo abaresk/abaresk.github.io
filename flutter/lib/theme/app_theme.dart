@@ -51,25 +51,19 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: background,
       textTheme: base.copyWith(
-        headlineLarge: const TextStyle(
-          fontFamily: 'Athelas',
-          fontFamilyFallback: ['Georgia', 'serif'],
+        headlineLarge: GoogleFonts.literata(
           fontSize: 26,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: textColor,
         ),
-        headlineMedium: const TextStyle(
-          fontFamily: 'Athelas',
-          fontFamilyFallback: ['Georgia', 'serif'],
+        headlineMedium: GoogleFonts.literata(
           fontSize: 24,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: textColor,
         ),
-        headlineSmall: const TextStyle(
-          fontFamily: 'Athelas',
-          fontFamilyFallback: ['Georgia', 'serif'],
+        headlineSmall: GoogleFonts.literata(
           fontSize: 20,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: textColor,
         ),
         titleLarge: GoogleFonts.sourceSans3(

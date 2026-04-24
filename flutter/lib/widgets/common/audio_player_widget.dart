@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:web/web.dart' as web;
 import '../../theme/app_theme.dart';
 
@@ -68,7 +69,9 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     }
 
     if (event.logicalKey == LogicalKeyboardKey.space) {
-      if (event is KeyDownEvent) { _togglePlayPause(); }
+      if (event is KeyDownEvent) {
+        _togglePlayPause();
+      }
       return KeyEventResult.handled;
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -159,9 +162,17 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               ),
             ),
             Text(
-              '${_format(_position)} / ${_format(_duration)}',
-              style: const TextStyle(fontSize: 12, color: AppTheme.darkGray),
+              '${_format(_position)} ',
+              style: GoogleFonts.literata(
+                  fontSize: 12,
+                  color:
+                      [PlayerState.playing, PlayerState.paused].contains(_state)
+                          ? AppTheme.primary
+                          : AppTheme.darkGray),
             ),
+            Text('/ ${_format(_duration)}',
+                style: GoogleFonts.literata(
+                    fontSize: 12, color: AppTheme.darkGray)),
             MenuAnchor(
               controller: _menuController,
               menuChildren: [

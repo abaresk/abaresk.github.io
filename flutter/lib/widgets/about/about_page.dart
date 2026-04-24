@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../services/content_service.dart';
 import '../../theme/app_theme.dart';
 import '../layout/constrained_body.dart';
@@ -26,11 +27,9 @@ class AboutPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'About',
-                    style: TextStyle(
-                      fontFamily: 'Athelas',
-                      fontFamilyFallback: ['Georgia', 'serif'],
+                    style: GoogleFonts.literata(
                       fontSize: 32,
                       color: AppTheme.textColor,
                       fontWeight: FontWeight.w400,

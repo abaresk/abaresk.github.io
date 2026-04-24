@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:highlight/highlight.dart' show highlight, Node;
 import 'package:google_fonts/google_fonts.dart';
@@ -121,26 +122,20 @@ class BlogMarkdownBody extends StatelessWidget {
 
     return MarkdownStyleSheet(
       p: bodyStyle,
-      h1: const TextStyle(
-        fontFamily: 'Athelas',
-        fontFamilyFallback: ['Georgia', 'serif'],
+      h1: GoogleFonts.literata(
         fontSize: 26,
         color: AppTheme.textColor,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
       ),
-      h2: const TextStyle(
-        fontFamily: 'Athelas',
-        fontFamilyFallback: ['Georgia', 'serif'],
+      h2: GoogleFonts.literata(
         fontSize: 24,
         color: AppTheme.textColor,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
       ),
-      h3: const TextStyle(
-        fontFamily: 'Athelas',
-        fontFamilyFallback: ['Georgia', 'serif'],
+      h3: GoogleFonts.literata(
         fontSize: 20,
         color: AppTheme.textColor,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
       ),
       h4: const TextStyle(fontSize: 16, color: AppTheme.textColor),
       code: codeStyle,
@@ -192,11 +187,25 @@ class _CodeBlockBuilder extends MarkdownElementBuilder {
   }
 }
 
-class HighlightedCode extends StatelessWidget {
+class HighlightedCode extends StatefulWidget {
   final String code;
   final String? language;
 
   const HighlightedCode({super.key, required this.code, this.language});
+
+  @override
+  State<HighlightedCode> createState() => _HighlightedCodeState();
+}
+
+class _HighlightedCodeState extends State<HighlightedCode> {
+  bool _copied = false;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   List<TextSpan> _convert(List<Node> nodes, Map<String, TextStyle> theme) {
     final spans = <TextSpan>[];
@@ -229,29 +238,107 @@ class HighlightedCode extends StatelessWidget {
     return spans;
   }
 
+  void _copy() {
+    Clipboard.setData(ClipboardData(text: widget.code));
+    setState(() => _copied = true);
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) setState(() => _copied = false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = AppTheme.solarizedTheme;
     final rootStyle = theme['root'];
     final parsed = highlight.parse(
-      code.replaceAll('\t', '        '),
-      language: language ?? 'plaintext',
+      widget.code.replaceAll('\t', '        '),
+      language: widget.language ?? 'plaintext',
     );
 
-    return Container(
-      color: AppTheme.codeBackground,
-      padding: const EdgeInsets.all(12),
-      child: SelectableText.rich(
-        TextSpan(
-          style: GoogleFonts.sourceCodePro(
-            fontSize: 13.5,
-            height: 1.5,
-            color: rootStyle?.color ?? const Color(0xff000000),
-            fontWeight: FontWeight.w500,
+    final lineCount = '\n'.allMatches(widget.code).length + 1;
+    final monoStyle = GoogleFonts.sourceCodePro(
+      fontSize: 13.5,
+      height: 1.5,
+      fontWeight: FontWeight.w500,
+    );
+
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          color: AppTheme.codeBackground,
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                      color: AppTheme.textColor.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(
+                      lineCount,
+                      (i) => Text(
+                        '${i + 1}',
+                        style: monoStyle.copyWith(
+                          color: AppTheme.textColor.withValues(alpha: 0.35),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Scrollbar(
+                  controller: _scrollController,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: SelectableText.rich(
+                      TextSpan(
+                        style: monoStyle.copyWith(
+                          color: rootStyle?.color ?? const Color(0xff000000),
+                        ),
+                        children: _convert(parsed.nodes!, theme),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          children: _convert(parsed.nodes!, theme),
         ),
-      ),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: IconButton(
+            onPressed: _copy,
+            icon: Icon(
+              _copied ? Icons.check : Icons.copy,
+              size: 16,
+              color: _copied
+                  ? Colors.green
+                  : AppTheme.codeForeground.withValues(alpha: 0.5),
+            ),
+            tooltip: _copied ? 'Copied!' : 'Copy',
+            style: IconButton.styleFrom(
+              backgroundColor: AppTheme.codeBackground,
+              minimumSize: const Size(28, 28),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

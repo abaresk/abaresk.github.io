@@ -7,8 +7,7 @@ const _greek = 'αβγδεζηθικλμνξοπρστυφχψω';
 const _upperGreek = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
 const _numbers = '0123456789';
 const _special = '<>()[]!?#;,.áéíóúâêîôûàèìòùãõ¡£¢∞§¶•˚√∫';
-
-final _cipherChars =
+final cipherChars =
     (_alphabet + _upperAlphabet + _greek + _upperGreek + _numbers + _special)
         .split('');
 
@@ -109,7 +108,7 @@ class CipherTextAnimator implements TextAnimator {
     return [
       for (var i = 0; i < targetText.length; i++)
         _randomIdxs.contains(i)
-            ? _cipherChars[rng.randInt(_cipherChars.length)]
+            ? cipherChars[rng.randInt(cipherChars.length)]
             : targetText[i],
     ].join();
   }

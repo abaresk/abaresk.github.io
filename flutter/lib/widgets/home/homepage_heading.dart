@@ -4,6 +4,7 @@ import 'package:abaresk_blog/widgets/common/text_animator/cipher_text_animator.d
 import 'package:abaresk_blog/widgets/common/text_animator/static_text_animator.dart';
 import 'package:abaresk_blog/widgets/common/text_animator/text_animator.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../services/rng_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -87,12 +88,10 @@ class _HomepageHeadingState extends State<HomepageHeading> {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: AnimatedText(
         animator: _animator,
-        style: const TextStyle(
-          fontFamily: 'Athelas',
-          fontFamilyFallback: ['Georgia', 'serif'],
+        style: GoogleFonts.literata(
           fontSize: 32,
           color: AppTheme.textColor,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
