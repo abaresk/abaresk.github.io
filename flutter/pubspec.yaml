@@ -23,6 +23,7 @@ dependencies:
   web: ^1.1.1
   xrandom: ^0.7.2
   mt19937: ^0.1.0
+  flutter_svg: ^2.2.0
 
 dev_dependencies:
   flutter_test:
