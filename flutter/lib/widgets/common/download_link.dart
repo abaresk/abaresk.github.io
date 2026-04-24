@@ -37,8 +37,9 @@ class _DownloadLinkState extends State<DownloadLink> {
             widget.label,
             style: TextStyle(
               color: AppTheme.primary,
-              decoration: _hovered ? TextDecoration.underline : TextDecoration.none,
-              decorationColor: AppTheme.primary,
+              decoration:
+                  _hovered ? TextDecoration.underline : TextDecoration.none,
+              decorationColor: AppTheme.accent,
             ),
           ),
         ),

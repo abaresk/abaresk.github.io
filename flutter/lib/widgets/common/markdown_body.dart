@@ -12,6 +12,13 @@ import 'audio_player_widget.dart';
 import 'download_link.dart';
 import 'blog_image.dart';
 
+final _bodyStyle = GoogleFonts.lato(
+  fontSize: 16,
+  color: AppTheme.textColor,
+  height: 1.5,
+  fontWeight: FontWeight.w400,
+);
+
 // Matches fenced code blocks that carry media/download tokens.
 final _specialBlockRe = RegExp(
   r'```(youtube|audio|download)\n([\s\S]*?)\n```',
@@ -69,7 +76,14 @@ class BlogMarkdownBody extends StatelessWidget {
           data: text,
           styleSheet: styleSheet,
           extensionSet: md.ExtensionSet.gitHubWeb,
-          builders: {'pre': _CodeBlockBuilder(), 'a': _LinkBuilder()},
+          builders: {
+            'pre': _CodeBlockBuilder(),
+          },
+          onTapLink: (text, href, title) {
+            if (href != null) {
+              launchUrl(Uri.parse(href));
+            }
+          },
           sizedImageBuilder: (config) {
             final path = config.uri.toString();
             if (path.startsWith('/')) {
@@ -106,20 +120,23 @@ class BlogMarkdownBody extends StatelessWidget {
   }
 
   MarkdownStyleSheet _buildStyleSheet(BuildContext context) {
-    const bodyStyle = TextStyle(
-      fontFamily: 'Source Sans 3',
-      fontSize: 16,
-      color: AppTheme.textColor,
-      height: 1.6,
-    );
+    final bodyStyle = _bodyStyle;
     final codeStyle = GoogleFonts.sourceCodePro(
       fontSize: 14,
       color: AppTheme.codeForeground,
-      backgroundColor: AppTheme.codeBackground,
+      fontWeight: FontWeight.w500,
     );
 
     return MarkdownStyleSheet(
       p: bodyStyle,
+      a: bodyStyle.copyWith(
+        color: AppTheme.primary,
+        decoration: TextDecoration.underline,
+        decorationColor: AppTheme.accent,
+      ),
+      blockSpacing: 16.0,
+      h2Padding: const EdgeInsets.only(top: 16),
+      h3Padding: const EdgeInsets.only(top: 8),
       h1: GoogleFonts.literata(
         fontSize: 26,
         color: AppTheme.textColor,
@@ -151,53 +168,6 @@ class BlogMarkdownBody extends StatelessWidget {
   }
 }
 
-class _LinkBuilder extends MarkdownElementBuilder {
-  @override
-  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
-    return _HoverableLink(
-      text: element.textContent,
-      href: element.attributes['href'],
-    );
-  }
-}
-
-class _HoverableLink extends StatefulWidget {
-  final String text;
-  final String? href;
-
-  const _HoverableLink({required this.text, required this.href});
-
-  @override
-  State<_HoverableLink> createState() => _HoverableLinkState();
-}
-
-class _HoverableLinkState extends State<_HoverableLink> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {
-          if (widget.href != null) launchUrl(Uri.parse(widget.href!));
-        },
-        child: Text(
-          widget.text,
-          style: TextStyle(
-            color: AppTheme.primary,
-            decoration:
-                _hovered ? TextDecoration.underline : TextDecoration.none,
-            decorationColor: AppTheme.primary,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // Handles fenced code blocks (registered for 'pre', which never appears for
 // inline code). Extracts the language from the inner <code class="language-X">
 // element; falls back to plaintext when no language is specified.
@@ -217,7 +187,7 @@ class _CodeBlockBuilder extends MarkdownElementBuilder {
     final className = codeEl?.attributes['class'];
     String? language;
     if (className != null && className.startsWith('language-')) {
-      final lang = className.substring(9);
+      final lang = className.substring('language-'.length);
       if (lang.isNotEmpty) language = lang;
     }
     return HighlightedCode(
@@ -281,7 +251,7 @@ class _HighlightedCodeState extends State<HighlightedCode> {
   void _copy() {
     Clipboard.setData(ClipboardData(text: widget.code));
     setState(() => _copied = true);
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 750), () {
       if (mounted) setState(() => _copied = false);
     });
   }
@@ -307,7 +277,7 @@ class _HighlightedCodeState extends State<HighlightedCode> {
         Container(
           width: double.infinity,
           color: AppTheme.codeBackground,
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+          padding: const EdgeInsets.fromLTRB(6, 12, 12, 6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -316,7 +286,7 @@ class _HighlightedCodeState extends State<HighlightedCode> {
                   border: Border(
                     right: BorderSide(
                       color: AppTheme.textColor.withValues(alpha: 0.2),
-                      width: 1,
+                      width: 2,
                     ),
                   ),
                 ),
@@ -327,7 +297,7 @@ class _HighlightedCodeState extends State<HighlightedCode> {
                     children: List.generate(
                       lineCount,
                       (i) => Text(
-                        '${i + 1}',
+                        '${i + 1}'.padLeft(3),
                         style: monoStyle.copyWith(
                           color: AppTheme.textColor.withValues(alpha: 0.35),
                         ),
@@ -341,18 +311,21 @@ class _HighlightedCodeState extends State<HighlightedCode> {
                 child: Scrollbar(
                   controller: _scrollController,
                   thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: SelectableText.rich(
-                      TextSpan(
-                        style: monoStyle.copyWith(
-                          color: rootStyle?.color ?? const Color(0xff000000),
+                  child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: SelectableText.rich(
+                          TextSpan(
+                            style: monoStyle.copyWith(
+                              color:
+                                  rootStyle?.color ?? const Color(0xff000000),
+                            ),
+                            children: _convert(parsed.nodes!, theme),
+                          ),
                         ),
-                        children: _convert(parsed.nodes!, theme),
-                      ),
-                    ),
-                  ),
+                      )),
                 ),
               ),
             ],
