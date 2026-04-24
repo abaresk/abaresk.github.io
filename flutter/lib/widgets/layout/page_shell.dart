@@ -13,11 +13,11 @@ class PageShell extends StatelessWidget {
       body: SelectionArea(
         child: Column(
           children: [
-            const SiteHeader(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    const SiteHeader(),
                     child,
                     const SiteFooter(),
                   ],

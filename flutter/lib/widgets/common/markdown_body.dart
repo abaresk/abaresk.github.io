@@ -99,8 +99,7 @@ class BlogMarkdownBody extends StatelessWidget {
       case 'download':
         final parts = seg.content.split('|');
         final path = parts[0];
-        final label =
-            parts.length > 1 ? parts[1] : path.split('/').last;
+        final label = parts.length > 1 ? parts[1] : path.split('/').last;
         return DownloadLink(path: path, label: label);
       default:
         return const SizedBox.shrink();
@@ -211,7 +210,8 @@ class HighlightedCode extends StatelessWidget {
             : TextSpan(text: node.value, style: theme[node.className!]));
       } else if (node.children != null) {
         final tmp = <TextSpan>[];
-        currentSpans.add(TextSpan(children: tmp, style: theme[node.className!]));
+        currentSpans
+            .add(TextSpan(children: tmp, style: theme[node.className!]));
         stack.add(currentSpans);
         currentSpans = tmp;
         for (final n in node.children!) {
@@ -239,7 +239,7 @@ class HighlightedCode extends StatelessWidget {
     );
 
     return Container(
-      color: rootStyle?.backgroundColor ?? const Color(0xffffffff),
+      color: AppTheme.codeBackground,
       padding: const EdgeInsets.all(12),
       child: SelectableText.rich(
         TextSpan(
@@ -247,6 +247,7 @@ class HighlightedCode extends StatelessWidget {
             fontSize: 13.5,
             height: 1.5,
             color: rootStyle?.color ?? const Color(0xff000000),
+            fontWeight: FontWeight.w500,
           ),
           children: _convert(parsed.nodes!, theme),
         ),

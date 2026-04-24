@@ -14,6 +14,7 @@ class SiteHeader extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
+          top: BorderSide(color: AppTheme.primary, width: 3),
           bottom: BorderSide(color: AppTheme.lightGray),
         ),
       ),
