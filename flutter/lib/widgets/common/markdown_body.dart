@@ -5,6 +5,7 @@ import 'package:highlight/highlight.dart' show highlight, Node;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../theme/app_theme.dart';
 import 'youtube_embed.dart';
 import 'audio_player_widget.dart';
@@ -68,16 +69,13 @@ class BlogMarkdownBody extends StatelessWidget {
           data: text,
           styleSheet: styleSheet,
           extensionSet: md.ExtensionSet.gitHubWeb,
-          builders: {'pre': _CodeBlockBuilder()},
+          builders: {'pre': _CodeBlockBuilder(), 'a': _LinkBuilder()},
           sizedImageBuilder: (config) {
             final path = config.uri.toString();
             if (path.startsWith('/')) {
               return BlogImage(assetPath: 'assets/content$path');
             }
             return Image.network(path);
-          },
-          onTapLink: (text, href, title) {
-            if (href != null) launchUrl(Uri.parse(href));
           },
         );
       }).toList(),
@@ -149,10 +147,52 @@ class BlogMarkdownBody extends StatelessWidget {
         ),
       ),
       blockquotePadding: const EdgeInsets.only(left: 10, top: 4, bottom: 4),
-      a: const TextStyle(
-        color: AppTheme.primary,
-        decoration: TextDecoration.underline,
-        decorationColor: AppTheme.primary,
+    );
+  }
+}
+
+class _LinkBuilder extends MarkdownElementBuilder {
+  @override
+  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    return _HoverableLink(
+      text: element.textContent,
+      href: element.attributes['href'],
+    );
+  }
+}
+
+class _HoverableLink extends StatefulWidget {
+  final String text;
+  final String? href;
+
+  const _HoverableLink({required this.text, required this.href});
+
+  @override
+  State<_HoverableLink> createState() => _HoverableLinkState();
+}
+
+class _HoverableLinkState extends State<_HoverableLink> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          if (widget.href != null) launchUrl(Uri.parse(widget.href!));
+        },
+        child: Text(
+          widget.text,
+          style: TextStyle(
+            color: AppTheme.primary,
+            decoration:
+                _hovered ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: AppTheme.primary,
+          ),
+        ),
       ),
     );
   }
