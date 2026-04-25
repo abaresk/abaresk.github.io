@@ -99,10 +99,7 @@ class BlogMarkdownBody extends StatelessWidget {
   Widget _buildSpecial(_SpecialSegment seg) {
     switch (seg.type) {
       case 'youtube':
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: YouTubeEmbed(videoId: seg.content),
-        );
+        return YouTubeEmbed(videoId: seg.content);
       case 'audio':
         final assetPath = seg.content.replaceFirst('/music/', 'audio/');
         return Padding(
