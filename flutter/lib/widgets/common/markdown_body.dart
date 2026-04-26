@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:web/web.dart' as web;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:highlight/highlight.dart' show highlight, Node;
 import 'package:google_fonts/google_fonts.dart';
@@ -204,14 +206,61 @@ class HighlightedCode extends StatefulWidget {
   State<HighlightedCode> createState() => _HighlightedCodeState();
 }
 
+// Tracks how many code blocks are currently holding the overscroll lock,
+// so we only set/clear the CSS property when the count crosses zero.
+int _overscrollLockCount = 0;
+
+void _acquireOverscrollLock() {
+  _overscrollLockCount++;
+  if (_overscrollLockCount == 1 && kIsWeb) {
+    (web.document.documentElement as web.HTMLElement?)
+        ?.style
+        .setProperty('overscroll-behavior-x', 'contain');
+  }
+}
+
+void _releaseOverscrollLock() {
+  if (_overscrollLockCount <= 0) return;
+  _overscrollLockCount--;
+  if (_overscrollLockCount == 0 && kIsWeb) {
+    (web.document.documentElement as web.HTMLElement?)
+        ?.style
+        .removeProperty('overscroll-behavior-x');
+  }
+}
+
 class _HighlightedCodeState extends State<HighlightedCode> {
   bool _copied = false;
   final ScrollController _scrollController = ScrollController();
+  bool _hovering = false;
+  bool _lockHeld = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
+    if (_lockHeld) {
+      _releaseOverscrollLock();
+      _lockHeld = false;
+    }
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _updateLock() {
+    final shouldHold = _hovering &&
+        _scrollController.hasClients &&
+        _scrollController.position.maxScrollExtent > 0;
+    if (shouldHold && !_lockHeld) {
+      _acquireOverscrollLock();
+      _lockHeld = true;
+    } else if (!shouldHold && _lockHeld) {
+      _releaseOverscrollLock();
+      _lockHeld = false;
+    }
   }
 
   List<TextSpan> _convert(List<Node> nodes, Map<String, TextStyle> theme) {
@@ -269,86 +318,96 @@ class _HighlightedCodeState extends State<HighlightedCode> {
       fontWeight: FontWeight.w500,
     );
 
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          color: AppTheme.codeBackground,
-          padding: const EdgeInsets.fromLTRB(6, 12, 12, 6),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: AppTheme.textColor.withValues(alpha: 0.2),
-                      width: 2,
+    return MouseRegion(
+      onEnter: (_) {
+        _hovering = true;
+        _updateLock();
+      },
+      onExit: (_) {
+        _hovering = false;
+        _updateLock();
+      },
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            color: AppTheme.codeBackground,
+            padding: const EdgeInsets.fromLTRB(6, 12, 12, 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(
+                        color: AppTheme.textColor.withValues(alpha: 0.2),
+                        width: 2,
+                      ),
                     ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: List.generate(
-                      lineCount,
-                      (i) => Text(
-                        '${i + 1}'.padLeft(3),
-                        style: monoStyle.copyWith(
-                          color: AppTheme.textColor.withValues(alpha: 0.35),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: List.generate(
+                        lineCount,
+                        (i) => Text(
+                          '${i + 1}'.padLeft(3),
+                          style: monoStyle.copyWith(
+                            color: AppTheme.textColor.withValues(alpha: 0.35),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: true,
-                  child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        child: SelectableText.rich(
-                          TextSpan(
-                            style: monoStyle.copyWith(
-                              color:
-                                  rootStyle?.color ?? const Color(0xff000000),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Scrollbar(
+                    controller: _scrollController,
+                    thumbVisibility: true,
+                    child: Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          scrollDirection: Axis.horizontal,
+                          child: SelectableText.rich(
+                            TextSpan(
+                              style: monoStyle.copyWith(
+                                color:
+                                    rootStyle?.color ?? const Color(0xff000000),
+                              ),
+                              children: _convert(parsed.nodes!, theme),
                             ),
-                            children: _convert(parsed.nodes!, theme),
                           ),
-                        ),
-                      )),
+                        )),
+                  ),
                 ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              onPressed: _copy,
+              icon: Icon(
+                _copied ? Icons.check : Icons.copy,
+                size: 16,
+                color: _copied
+                    ? Colors.green
+                    : AppTheme.codeForeground.withValues(alpha: 0.5),
               ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 4,
-          right: 4,
-          child: IconButton(
-            onPressed: _copy,
-            icon: Icon(
-              _copied ? Icons.check : Icons.copy,
-              size: 16,
-              color: _copied
-                  ? Colors.green
-                  : AppTheme.codeForeground.withValues(alpha: 0.5),
-            ),
-            tooltip: _copied ? 'Copied!' : 'Copy',
-            style: IconButton.styleFrom(
-              backgroundColor: AppTheme.codeBackground,
-              minimumSize: const Size(28, 28),
-              padding: EdgeInsets.zero,
+              tooltip: _copied ? 'Copied!' : 'Copy',
+              style: IconButton.styleFrom(
+                backgroundColor: AppTheme.codeBackground,
+                minimumSize: const Size(28, 28),
+                padding: EdgeInsets.zero,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
