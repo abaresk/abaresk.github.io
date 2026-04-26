@@ -51,33 +51,36 @@ class _YouTubeEmbedState extends State<YouTubeEmbed> {
       webp: false,
     );
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: _onPlay,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            const Positioned.fill(child: ColoredBox(color: Colors.black)),
-            Positioned.fill(
-              child: Image.network(
-                thumbnailUrl,
-                fit: BoxFit.fill,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-              ),
+    return Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => setState(() => _hovered = true),
+          onExit: (_) => setState(() => _hovered = false),
+          child: GestureDetector(
+            onTap: _onPlay,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Positioned.fill(child: ColoredBox(color: Colors.black)),
+                Positioned.fill(
+                  child: Image.network(
+                    thumbnailUrl,
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+                const Positioned.fill(
+                    child: ColoredBox(color: Color(0x33000000))),
+                AnimatedScale(
+                  scale: _hovered ? 1.12 : 1.0,
+                  duration: const Duration(milliseconds: 100),
+                  child: const _PlayButton(),
+                ),
+              ],
             ),
-            const Positioned.fill(child: ColoredBox(color: Color(0x33000000))),
-            AnimatedScale(
-              scale: _hovered ? 1.12 : 1.0,
-              duration: const Duration(milliseconds: 100),
-              child: const _PlayButton(),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
 

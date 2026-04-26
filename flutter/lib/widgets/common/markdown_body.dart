@@ -128,14 +128,15 @@ class BlogMarkdownBody extends StatelessWidget {
 
     return MarkdownStyleSheet(
       p: bodyStyle,
+      pPadding: const EdgeInsets.only(bottom: 8),
       a: bodyStyle.copyWith(
         color: AppTheme.primary,
         decoration: TextDecoration.underline,
         decorationColor: AppTheme.accent,
       ),
-      blockSpacing: 16.0,
-      h2Padding: const EdgeInsets.only(top: 16),
-      h3Padding: const EdgeInsets.only(top: 8),
+      h1Padding: const EdgeInsets.only(top: 16, bottom: 16),
+      h2Padding: const EdgeInsets.only(top: 8, bottom: 8),
+      h3Padding: const EdgeInsets.only(top: 6, bottom: 6),
       h1: GoogleFonts.literata(
         fontSize: 26,
         color: AppTheme.textColor,
