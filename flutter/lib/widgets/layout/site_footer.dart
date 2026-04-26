@@ -11,11 +11,6 @@ class SiteFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(color: AppTheme.lightGray),
-        ),
-      ),
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: ConstrainedBody(
         child: Row(
