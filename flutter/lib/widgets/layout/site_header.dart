@@ -98,7 +98,7 @@ class _Logo extends StatelessWidget {
   }
 }
 
-class _NavLink extends StatelessWidget {
+class _NavLink extends StatefulWidget {
   final String label;
   final String path;
   final String location;
@@ -112,23 +112,77 @@ class _NavLink extends StatelessWidget {
   bool get _isActive => location.startsWith(path);
 
   @override
+  State<_NavLink> createState() => _NavLinkState();
+}
+
+class _NavLinkState extends State<_NavLink> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: InkWell(
-        onTap: () => context.go(path),
-        mouseCursor: SystemMouseCursors.click,
-        overlayColor: WidgetStateProperty.all(Colors.transparent),
-        child: Text(
-          label,
-          style: GoogleFonts.literata(
-            fontSize: 16,
-            color: _isActive ? AppTheme.primary : AppTheme.textColor,
-            decoration: TextDecoration.none,
-            fontWeight: _isActive ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
+      padding: const EdgeInsets.only(left: 4),
+      child: MouseRegion(
+          onEnter: (_) => setState(() => _hovered = true),
+          onExit: (_) => setState(() => _hovered = false),
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => context.go(widget.path),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: _hovered ? 1.0 : 0.0),
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
+              builder: (context, value, _) => Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 7),
+                child: CustomPaint(
+                  foregroundPainter: _UnderlinePainter(
+                      progress: value, color: AppTheme.primary),
+                  child: Text.rich(
+                    TextSpan(
+                      text: widget.label,
+                      style: GoogleFonts.literata(
+                        fontSize: 16,
+                        color: widget._isActive
+                            ? AppTheme.primary
+                            : AppTheme.textColor,
+                        decoration: TextDecoration.none,
+                        fontWeight: widget._isActive
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                      ),
+                      mouseCursor: SystemMouseCursors.click,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )),
     );
   }
+}
+
+class _UnderlinePainter extends CustomPainter {
+  final double progress;
+  final Color color;
+
+  const _UnderlinePainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress == 0) return;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    final centerX = size.width / 2;
+    final halfWidth = size.width / 2 * progress * 0.9;
+    final y = size.height + 4;
+    canvas.drawLine(
+        Offset(centerX - halfWidth, y), Offset(centerX + halfWidth, y), paint);
+  }
+
+  @override
+  bool shouldRepaint(_UnderlinePainter old) =>
+      old.progress != progress || old.color != color;
 }
