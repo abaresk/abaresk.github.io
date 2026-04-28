@@ -74,7 +74,7 @@ class _PostContent extends StatelessWidget {
               spacing: 4,
               children: [
                 Text(
-                  post!.formattedDate,
+                  post!.fullDate,
                   style: GoogleFonts.literata(
                     fontSize: 13,
                     color: AppTheme.darkGray,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/post.dart';
 import '../../services/content_service.dart';
 import '../../theme/app_theme.dart';
@@ -37,11 +38,9 @@ class PostsPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              p.formattedDate,
-                              style: const TextStyle(
-                                color: AppTheme.darkGray,
-                                fontSize: 13,
-                              ),
+                              p.monthDay,
+                              style: GoogleFonts.literata(
+                                  fontSize: 13, color: AppTheme.darkGray),
                             ),
                           ],
                         ),
