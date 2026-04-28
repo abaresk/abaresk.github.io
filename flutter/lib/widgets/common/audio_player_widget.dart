@@ -117,7 +117,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       focusNode: _focusNode,
       onKeyEvent: (_, event) => _handleKeyEvent(event),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: AppTheme.background,
           border: Border.all(color: AppTheme.lightGray),
