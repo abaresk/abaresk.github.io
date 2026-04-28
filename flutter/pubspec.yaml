@@ -53,4 +53,6 @@ flutter:
   fonts:
     - family: Chancery
       fonts:
-        - asset: fonts/chancery/apple-chancery-webfont.ttf
+        # Fixed the font file by tweaking all the ascent and descent values in
+        # the TTX file, then converting back to TTF.
+        - asset: fonts/chancery/apple-chancery-webfont-fixed.ttf
