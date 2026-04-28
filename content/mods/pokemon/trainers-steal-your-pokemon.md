@@ -28,7 +28,7 @@ In order to mitigate accidental softlocks, any Pokémon can learn any HM.
 
 # Downloads
 
-*Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
+_Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file._
 
 ## Soft
 

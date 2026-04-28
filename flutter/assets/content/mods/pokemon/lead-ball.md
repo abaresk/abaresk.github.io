@@ -1,6 +1,6 @@
 Your Poké Balls are made of lead -- your Pokémon are permanently damaged by lead poisoning both in and out of battle. If your Pokémon actually gets poisoned, it takes double damage.
 
-Unlike regular poison, lead poisoning will also affect Steel- and Poison-type Pokémon. 
+Unlike regular poison, lead poisoning will also affect Steel- and Poison-type Pokémon.
 
 Too easy? Try beating it without using healing items!
 
@@ -20,7 +20,7 @@ You can disable notifications when Pokémon faint in the Options menu.
 
 # Downloads
 
-*Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
+_Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file._
 
 ```download
 /downloads/lead-ball/emerald-lead-ball.bps|emerald-lead-ball.bps

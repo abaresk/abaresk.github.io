@@ -4,13 +4,11 @@ import '../widgets/home/home_page.dart';
 import '../widgets/posts/posts_page.dart';
 import '../widgets/posts/post_page.dart';
 import '../widgets/mods/mods_page.dart';
-import '../widgets/mods/pokemon_index_page.dart';
 import '../widgets/mods/mod_detail_page.dart';
 import '../widgets/music/music_page.dart';
 import '../widgets/about/about_page.dart';
 
-Page<void> _noTransition(Widget child) =>
-    NoTransitionPage<void>(child: child);
+Page<void> _noTransition(Widget child) => NoTransitionPage<void>(child: child);
 
 final appRouter = GoRouter(
   routes: [
@@ -33,7 +31,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/mods/pokemon',
-      pageBuilder: (ctx, state) => _noTransition(const PokemonIndexPage()),
+      redirect: (ctx, state) => '/mods',
     ),
     GoRoute(
       path: '/mods/pokemon/:slug',

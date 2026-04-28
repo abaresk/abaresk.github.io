@@ -64,7 +64,7 @@ class _ArchiveCardState extends State<_ArchiveCard> {
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: AppTheme.primary,
+                color: _hovered ? AppTheme.primary : AppTheme.textColor,
                 width: _hovered ? 3 : 1,
               ),
             ),
