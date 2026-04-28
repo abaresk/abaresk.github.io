@@ -16,11 +16,10 @@ class SiteHeader extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(color: AppTheme.primary, width: 3),
-          bottom: BorderSide(color: AppTheme.lightGray),
         ),
       ),
       child: ConstrainedBody(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
         child: narrow
             ? _NarrowHeader(location: location)
             : _WideHeader(location: location),
@@ -88,8 +87,8 @@ class _Logo extends StatelessWidget {
         "Abaresk",
         style: TextStyle(
           fontFamily: 'Chancery',
-          fontSize: 28,
-          fontWeight: FontWeight.w300,
+          fontSize: 48,
+          fontWeight: FontWeight.w400,
           color: AppTheme.textColor,
           decoration: TextDecoration.none,
         ),

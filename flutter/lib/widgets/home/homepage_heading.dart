@@ -89,7 +89,7 @@ class _HomepageHeadingState extends State<HomepageHeading> {
       child: AnimatedText(
         animator: _animator,
         style: GoogleFonts.literata(
-          fontSize: 32,
+          fontSize: 24,
           color: AppTheme.textColor,
           fontWeight: FontWeight.w600,
         ),
