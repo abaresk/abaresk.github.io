@@ -162,18 +162,25 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                 inactiveColor: AppTheme.lightGray,
               ),
             ),
-            Text(
-              '${_format(_position)} ',
-              style: GoogleFonts.literata(
-                  fontSize: 12,
-                  color:
-                      [PlayerState.playing, PlayerState.paused].contains(_state)
-                          ? AppTheme.primary
-                          : AppTheme.darkGray),
-            ),
-            Text('/ ${_format(_duration)}',
+            SizedBox(
+              width: 38,
+              child: Text(
+                _format(_position),
+                textAlign: TextAlign.right,
                 style: GoogleFonts.literata(
-                    fontSize: 12, color: AppTheme.darkGray)),
+                    fontSize: 12,
+                    fontFeatures: [const FontFeature.tabularFigures()],
+                    color: [PlayerState.playing, PlayerState.paused]
+                            .contains(_state)
+                        ? AppTheme.primary
+                        : AppTheme.darkGray),
+              ),
+            ),
+            Text(' / ${_format(_duration)}',
+                style: GoogleFonts.literata(
+                    fontSize: 12,
+                    fontFeatures: [const FontFeature.tabularFigures()],
+                    color: AppTheme.darkGray)),
             MenuAnchor(
               controller: _menuController,
               menuChildren: [
