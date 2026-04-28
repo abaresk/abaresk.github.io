@@ -54,6 +54,7 @@ class _PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subHeadingWeight = FontWeight.w400;
     return Padding(
       padding: const EdgeInsets.only(top: 32, bottom: 64),
       child: Column(
@@ -69,12 +70,34 @@ class _PostContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              post!.formattedDate,
-              style: const TextStyle(
-                color: AppTheme.darkGray,
-                fontSize: 13,
-              ),
+            Row(
+              spacing: 4,
+              children: [
+                Text(
+                  post!.formattedDate,
+                  style: GoogleFonts.literata(
+                    fontSize: 13,
+                    color: AppTheme.darkGray,
+                    fontWeight: subHeadingWeight,
+                  ),
+                ),
+                Text(
+                  '•',
+                  style: GoogleFonts.literata(
+                    fontSize: 13,
+                    color: AppTheme.darkGray,
+                    fontWeight: subHeadingWeight,
+                  ),
+                ),
+                Text(
+                  '${_minutesToRead(markdown)} min read',
+                  style: GoogleFonts.literata(
+                    fontSize: 13,
+                    color: AppTheme.darkGray,
+                    fontWeight: subHeadingWeight,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
           ],
@@ -83,4 +106,10 @@ class _PostContent extends StatelessWidget {
       ),
     );
   }
+}
+
+// From https://github.com/gohugoio/hugo/blob/90d8bf34aea897a8a329480bde54ff1c61c0c9b3/hugolib/page__content.go#L816
+int _minutesToRead(String content) {
+  final wordCount = content.split(RegExp(r'\s+')).length;
+  return (wordCount + 212) ~/ 213;
 }
