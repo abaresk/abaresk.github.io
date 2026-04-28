@@ -26,15 +26,16 @@ class MusicPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Surf theme',
-                style: TextStyle(
+                style: GoogleFonts.lato(
                   fontSize: 16,
                   fontStyle: FontStyle.italic,
                   color: AppTheme.textColor,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               const AudioPlayerWidget(assetPath: 'audio/surf.wav'),
             ],
           ),
