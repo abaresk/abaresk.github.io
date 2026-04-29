@@ -1,9 +1,20 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:web/web.dart' as web;
 import '../../theme/app_theme.dart';
+
+enum ProgressMilestone {
+  p25(25),
+  p50(50),
+  p75(75),
+  p100(100);
+
+  final int percent;
+  const ProgressMilestone(this.percent);
+}
 
 class AudioPlayerWidget extends StatefulWidget {
   final String assetPath;
@@ -22,6 +33,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   Duration _duration = Duration.zero;
   bool _wasPlaying = false;
   double _speed = 1.0;
+  final _loggedMilestones = <ProgressMilestone>{};
 
   static const _speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
   static const _seekStep = Duration(seconds: 2);
@@ -31,14 +43,13 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     super.initState();
     _player.onPlayerStateChanged.listen((s) {
       if (mounted) {
-        setState(() {
-          _state = s;
-          if (s == PlayerState.completed) _position = _duration;
-        });
+        _onPlayerStateChanged(s);
       }
     });
     _player.onPositionChanged.listen((p) {
-      if (mounted) setState(() => _position = p);
+      if (mounted) {
+        _onPositionChanged(p);
+      }
     });
     _player.onDurationChanged.listen((d) {
       if (mounted) setState(() => _duration = d);
@@ -57,6 +68,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     if (_state == PlayerState.playing) {
       await _player.pause();
     } else {
+      await FirebaseAnalytics.instance
+          .logEvent(name: 'play_audio', parameters: _analyticsParams);
       await _player.resume();
       await _player.setPlaybackRate(_speed);
     }
@@ -96,17 +109,55 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     return KeyEventResult.ignored;
   }
 
+  Map<String, Object> get _analyticsParams => {
+        'file_path': '/assets/${widget.assetPath}',
+        'file_label': widget.assetPath.split('/').last,
+      };
+
+  void _onPlayerStateChanged(PlayerState state) {
+    setState(() {
+      _state = state;
+      if (state == PlayerState.completed) {
+        _position = _duration;
+      }
+    });
+  }
+
+  void _onPositionChanged(Duration position) {
+    setState(() => _position = position);
+    if (_duration <= Duration.zero) return;
+
+    final pct =
+        (position.inMilliseconds / _duration.inMilliseconds * 100).round();
+    for (final milestone in [
+      ProgressMilestone.p25,
+      ProgressMilestone.p50,
+      ProgressMilestone.p75,
+      ProgressMilestone.p100,
+    ]) {
+      if (pct >= milestone.percent && !_loggedMilestones.contains(milestone)) {
+        _loggedMilestones.add(milestone);
+        FirebaseAnalytics.instance
+            .logEvent(name: 'audio_progress', parameters: {
+          ..._analyticsParams,
+          'percent': milestone.percent,
+        });
+      }
+    }
+  }
+
   String _format(Duration d) {
     final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$m:$s';
   }
 
-  void _download() {
-    final filename = widget.assetPath.split('/').last;
+  void _download() async {
+    await FirebaseAnalytics.instance
+        .logEvent(name: 'download_audio', parameters: _analyticsParams);
     web.HTMLAnchorElement()
       ..href = '/assets/${widget.assetPath}'
-      ..download = filename
+      ..download = widget.assetPath.split('/').last
       ..click();
   }
 
@@ -152,6 +203,11 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                   final pos = Duration(
                     milliseconds: (v * _duration.inMilliseconds).round(),
                   );
+                  final pct = _duration.inMilliseconds > 0
+                      ? (pos.inMilliseconds / _duration.inMilliseconds * 100)
+                          .round()
+                      : 0;
+                  _loggedMilestones.removeWhere((m) => m.percent > pct);
                   await _player.seek(pos);
                   if (_wasPlaying) {
                     await _player.resume();
@@ -196,6 +252,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                             onPressed: () async {
                               setState(() => _speed = s);
                               await _player.setPlaybackRate(s);
+                              await FirebaseAnalytics.instance.logEvent(
+                                  name: 'audio_playback_speed',
+                                  parameters: {
+                                    ..._analyticsParams,
+                                    'speed': s,
+                                  });
                             },
                             child: Text(
                               '${s}x',

@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:web/web.dart' as web;
 import '../../theme/app_theme.dart';
@@ -15,7 +16,12 @@ class DownloadLink extends StatefulWidget {
 class _DownloadLinkState extends State<DownloadLink> {
   bool _hovered = false;
 
-  void _download() {
+  void _download() async {
+    await FirebaseAnalytics.instance
+        .logEvent(name: 'download_link', parameters: {
+      'file_path': widget.path,
+      'file_label': widget.label,
+    });
     web.HTMLAnchorElement()
       ..href = widget.path
       ..download = widget.label
