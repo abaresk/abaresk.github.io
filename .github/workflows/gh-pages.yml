@@ -3,30 +3,35 @@ name: github pages
 on:
   push:
     branches:
-      - main # Set a branch to deploy
+      - main
   pull_request:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+      - uses: actions/checkout@v4
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          hugo-version: "0.68.3"
-          # extended: true
+          channel: stable
 
-      - name: Build
-        run: hugo --minify
+      - name: Build manifest
+        working-directory: flutter
+        run: dart run scripts/build_manifest.dart
+
+      - name: Build Flutter web
+        working-directory: flutter
+        run: flutter build web --release
+
+      - name: Pre-render for SEO
+        working-directory: flutter
+        run: dart run scripts/prerender.dart
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: flutter/build/web
