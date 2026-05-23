@@ -18,7 +18,7 @@ class PageShell extends StatefulWidget {
 
 class _PageShellState extends State<PageShell> with TickerProviderStateMixin {
   final _scrollController = ScrollController();
-  final _focusNode = FocusNode();
+  late final FocusNode _selectionFocusNode;
   Timer? _scrollTimer;
   Ticker? _scrollTicker;
   double _scrollVelocity = 0;
@@ -29,12 +29,24 @@ class _PageShellState extends State<PageShell> with TickerProviderStateMixin {
   static const _holdDelay = Duration(milliseconds: 200);
 
   @override
+  void initState() {
+    super.initState();
+    _selectionFocusNode = FocusNode(skipTraversal: true);
+    HardwareKeyboard.instance.addHandler(_onKey);
+  }
+
+  @override
   void dispose() {
+    HardwareKeyboard.instance.removeHandler(_onKey);
     _scrollTimer?.cancel();
     _scrollTicker?.dispose();
     _scrollController.dispose();
-    _focusNode.dispose();
+    _selectionFocusNode.dispose();
     super.dispose();
+  }
+
+  bool _onKey(KeyEvent event) {
+    return _handleKeyEvent(event) == KeyEventResult.handled;
   }
 
   void _beginArrowScroll(double velocity) {
@@ -159,12 +171,11 @@ class _PageShellState extends State<PageShell> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Focus(
-        focusNode: _focusNode,
-        autofocus: true,
-        onKeyEvent: (_, event) => _handleKeyEvent(event),
-        child: SelectionArea(
+    return FocusTraversalGroup(
+      policy: _SkipPlatformViewPolicy(),
+      child: Scaffold(
+        body: SelectionArea(
+          focusNode: _selectionFocusNode,
           child: Column(
             children: [
               Expanded(
@@ -183,6 +194,18 @@ class _PageShellState extends State<PageShell> with TickerProviderStateMixin {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SkipPlatformViewPolicy extends ReadingOrderTraversalPolicy {
+  @override
+  Iterable<FocusNode> sortDescendants(
+      Iterable<FocusNode> descendants, FocusNode currentNode) {
+    return super.sortDescendants(
+      descendants
+          .where((n) => n.debugLabel?.startsWith('PlatformView') != true),
+      currentNode,
     );
   }
 }

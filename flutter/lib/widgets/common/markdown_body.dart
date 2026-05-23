@@ -40,20 +40,74 @@ class _SpecialSegment extends _Segment {
   _SpecialSegment(this.type, this.content);
 }
 
+// A plain paragraph that contains at least one markdown link and is rendered
+// with a custom inline builder so individual links can receive Tab focus.
+class _LinkParagraphSegment extends _Segment {
+  final String text;
+  _LinkParagraphSegment(this.text);
+}
+
+final _mdLinkRe = RegExp(r'\[.+?\]\(.+?\)');
+
+// True for markdown that starts a block-level construct (header, list,
+// blockquote, thematic break). These are left for MarkdownBody.
+bool _isBlockMarkdown(String para) {
+  return para.startsWith('#') ||
+      para.startsWith('>') ||
+      para.startsWith('- ') ||
+      para.startsWith('* ') ||
+      para.startsWith('+ ') ||
+      RegExp(r'^\d+\.\s').hasMatch(para) ||
+      para.startsWith('---') ||
+      para.startsWith('===') ||
+      para.startsWith('***');
+}
+
 List<_Segment> _parseSegments(String data) {
   final segments = <_Segment>[];
   int cursor = 0;
   for (final m in _specialBlockRe.allMatches(data)) {
     if (m.start > cursor) {
-      segments.add(_TextSegment(data.substring(cursor, m.start)));
+      segments.addAll(_expandText(data.substring(cursor, m.start)));
     }
     segments.add(_SpecialSegment(m.group(1)!, m.group(2)!.trim()));
     cursor = m.end;
   }
   if (cursor < data.length) {
-    segments.add(_TextSegment(data.substring(cursor)));
+    segments.addAll(_expandText(data.substring(cursor)));
   }
   return segments;
+}
+
+// Splits a raw text chunk by paragraph boundaries. Paragraphs that contain
+// markdown links become _LinkParagraphSegments; the rest are re-joined into
+// _TextSegments so MarkdownBody handles them normally.
+List<_Segment> _expandText(String text) {
+  final result = <_Segment>[];
+  final paragraphs = text.split(RegExp(r'\n{2,}'));
+  final textBuf = StringBuffer();
+
+  void flushText() {
+    if (textBuf.isNotEmpty) {
+      result.add(_TextSegment(textBuf.toString()));
+      textBuf.clear();
+    }
+  }
+
+  for (final para in paragraphs) {
+    final trimmed = para.trim();
+    if (trimmed.isEmpty) continue;
+
+    if (!_isBlockMarkdown(trimmed) && _mdLinkRe.hasMatch(trimmed)) {
+      flushText();
+      result.add(_LinkParagraphSegment(trimmed));
+    } else {
+      if (textBuf.isNotEmpty) textBuf.write('\n\n');
+      textBuf.write(para);
+    }
+  }
+  flushText();
+  return result;
 }
 
 class BlogMarkdownBody extends StatelessWidget {
@@ -70,6 +124,9 @@ class BlogMarkdownBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: segments.map((seg) {
         if (seg is _SpecialSegment) return _buildSpecial(seg);
+        if (seg is _LinkParagraphSegment) {
+          return _buildLinkParagraph(seg, styleSheet);
+        }
 
         final text = (seg as _TextSegment).text;
         if (text.trim().isEmpty) return const SizedBox.shrink();
@@ -96,6 +153,60 @@ class BlogMarkdownBody extends StatelessWidget {
         );
       }).toList(),
     );
+  }
+
+  Widget _buildLinkParagraph(
+      _LinkParagraphSegment seg, MarkdownStyleSheet styleSheet) {
+    final doc = md.Document(extensionSet: md.ExtensionSet.gitHubWeb);
+    final nodes = doc.parseInline(seg.text);
+    final baseStyle = styleSheet.p ?? _bodyStyle;
+    final spans = _inlineNodesToSpans(nodes, baseStyle, styleSheet);
+    return Padding(
+      padding: styleSheet.pPadding ?? EdgeInsets.zero,
+      child: Text.rich(TextSpan(children: spans, style: baseStyle)),
+    );
+  }
+
+  List<InlineSpan> _inlineNodesToSpans(
+      List<md.Node> nodes, TextStyle style, MarkdownStyleSheet styleSheet) {
+    final spans = <InlineSpan>[];
+    for (final node in nodes) {
+      if (node is md.Text) {
+        spans.add(TextSpan(text: node.text, style: style));
+      } else if (node is md.Element) {
+        spans.addAll(_inlineElementToSpans(node, style, styleSheet));
+      }
+    }
+    return spans;
+  }
+
+  List<InlineSpan> _inlineElementToSpans(
+      md.Element el, TextStyle style, MarkdownStyleSheet styleSheet) {
+    switch (el.tag) {
+      case 'a':
+        final href = el.attributes['href'];
+        final text = el.textContent;
+        final linkStyle = styleSheet.a ?? style;
+        return [
+          WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: _FocusableLink(text: text, href: href, style: linkStyle),
+          ),
+        ];
+      case 'strong':
+        return _inlineNodesToSpans(
+            el.children ?? [], style.copyWith(fontWeight: FontWeight.bold), styleSheet);
+      case 'em':
+        return _inlineNodesToSpans(
+            el.children ?? [], style.copyWith(fontStyle: FontStyle.italic), styleSheet);
+      case 'code':
+        final codeStyle =
+            styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
+        return [TextSpan(text: el.textContent, style: codeStyle)];
+      default:
+        return _inlineNodesToSpans(el.children ?? [], style, styleSheet);
+    }
   }
 
   Widget _buildSpecial(_SpecialSegment seg) {
@@ -408,6 +519,72 @@ class _HighlightedCodeState extends State<HighlightedCode> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _FocusableLink extends StatefulWidget {
+  final String text;
+  final String? href;
+  final TextStyle style;
+
+  const _FocusableLink({
+    required this.text,
+    required this.href,
+    required this.style,
+  });
+
+  @override
+  State<_FocusableLink> createState() => _FocusableLinkState();
+}
+
+class _FocusableLinkState extends State<_FocusableLink> {
+  late final FocusNode _focusNode;
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(
+        () => setState(() => _focused = _focusNode.hasFocus));
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _open() {
+    if (widget.href != null) launchUrl(Uri.parse(widget.href!));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _focusNode,
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          _open();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: _open,
+        child: Text(
+          widget.text,
+          style: widget.style.copyWith(
+            decorationColor: _focused ? AppTheme.primary : null,
+            decorationThickness: _focused ? 2.0 : null,
+            backgroundColor:
+                _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
+          ),
+        ),
       ),
     );
   }

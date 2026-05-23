@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
@@ -76,21 +77,64 @@ class _NarrowHeader extends StatelessWidget {
   }
 }
 
-class _Logo extends StatelessWidget {
+class _Logo extends StatefulWidget {
+  @override
+  State<_Logo> createState() => _LogoState();
+}
+
+class _LogoState extends State<_Logo> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => context.go('/'),
-      mouseCursor: SystemMouseCursors.click,
-      overlayColor: WidgetStateProperty.all(Colors.transparent),
-      child: const Text(
-        "Abaresk",
-        style: TextStyle(
-          fontFamily: 'Chancery',
-          fontSize: 48,
-          fontWeight: FontWeight.w400,
-          color: AppTheme.textColor,
-          decoration: TextDecoration.none,
+    final focused = _focusNode.hasFocus;
+    return Focus(
+      focusNode: _focusNode,
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          context.go('/');
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: focused ? AppTheme.primary : Colors.transparent,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: InkWell(
+          onTap: () => context.go('/'),
+          mouseCursor: SystemMouseCursors.click,
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          canRequestFocus: false,
+          child: const Text(
+            "Abaresk",
+            style: TextStyle(
+              fontFamily: 'Chancery',
+              fontSize: 48,
+              fontWeight: FontWeight.w400,
+              color: AppTheme.textColor,
+              decoration: TextDecoration.none,
+            ),
+          ),
         ),
       ),
     );
@@ -116,47 +160,74 @@ class _NavLink extends StatefulWidget {
 
 class _NavLinkState extends State<_NavLink> {
   bool _hovered = false;
+  bool _focused = false;
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(() => setState(() => _focused = _focusNode.hasFocus));
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 4),
-      child: MouseRegion(
-          onEnter: (_) => setState(() => _hovered = true),
-          onExit: (_) => setState(() => _hovered = false),
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => context.go(widget.path),
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: _hovered ? 1.0 : 0.0),
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeOut,
-              builder: (context, value, _) => Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 7),
-                child: CustomPaint(
-                  foregroundPainter: _UnderlinePainter(
-                      progress: value, color: AppTheme.primary),
-                  child: Text.rich(
-                    TextSpan(
-                      text: widget.label,
-                      style: GoogleFonts.literata(
-                        fontSize: 16,
-                        color: widget._isActive
-                            ? AppTheme.primary
-                            : AppTheme.textColor,
-                        decoration: TextDecoration.none,
-                        fontWeight: widget._isActive
-                            ? FontWeight.w600
-                            : FontWeight.w400,
+      child: Focus(
+        focusNode: _focusNode,
+        onKeyEvent: (_, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            context.go(widget.path);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: MouseRegion(
+            onEnter: (_) => setState(() => _hovered = true),
+            onExit: (_) => setState(() => _hovered = false),
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => context.go(widget.path),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: _hovered || _focused ? 1.0 : 0.0),
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOut,
+                builder: (context, value, _) => Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 7),
+                  child: CustomPaint(
+                    foregroundPainter: _UnderlinePainter(
+                        progress: value, color: AppTheme.primary),
+                    child: Text.rich(
+                      TextSpan(
+                        text: widget.label,
+                        style: GoogleFonts.literata(
+                          fontSize: 16,
+                          color: widget._isActive
+                              ? AppTheme.primary
+                              : AppTheme.textColor,
+                          decoration: TextDecoration.none,
+                          fontWeight: widget._isActive
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                        mouseCursor: SystemMouseCursors.click,
                       ),
-                      mouseCursor: SystemMouseCursors.click,
                     ),
                   ),
                 ),
               ),
-            ),
-          )),
+            )),
+      ),
     );
   }
 }
