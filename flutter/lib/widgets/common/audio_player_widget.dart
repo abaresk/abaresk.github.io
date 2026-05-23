@@ -27,6 +27,9 @@ class AudioPlayerWidget extends StatefulWidget {
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   final _player = AudioPlayer();
   final _focusNode = FocusNode();
+  final _playButtonFocusNode = FocusNode();
+  final _menuButtonFocusNode = FocusNode();
+  final _downloadMenuItemFocusNode = FocusNode();
   final _menuController = MenuController();
   PlayerState _state = PlayerState.stopped;
   Duration _position = Duration.zero;
@@ -61,6 +64,9 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   void dispose() {
     _player.dispose();
     _focusNode.dispose();
+    _playButtonFocusNode.dispose();
+    _menuButtonFocusNode.dispose();
+    _downloadMenuItemFocusNode.dispose();
     super.dispose();
   }
 
@@ -77,11 +83,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   KeyEventResult _handleKeyEvent(KeyEvent event) {
     if ((event is! KeyDownEvent && event is! KeyRepeatEvent) ||
-        !_focusNode.hasPrimaryFocus) {
+        !_focusNode.hasFocus) {
       return KeyEventResult.ignored;
     }
 
     if (event.logicalKey == LogicalKeyboardKey.space) {
+      if (_menuButtonFocusNode.hasPrimaryFocus) return KeyEventResult.ignored;
       if (event is KeyDownEvent) {
         _togglePlayPause();
       }
@@ -178,11 +185,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         child: Row(
           children: [
             IconButton(
+              focusNode: _playButtonFocusNode,
               icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
               color: AppTheme.primary,
               onPressed: () async {
                 await _togglePlayPause();
-                _focusNode.requestFocus();
+                _playButtonFocusNode.requestFocus();
               },
             ),
             Expanded(
@@ -239,8 +247,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                     color: AppTheme.darkGray)),
             MenuAnchor(
               controller: _menuController,
+              childFocusNode: _menuButtonFocusNode,
               menuChildren: [
                 MenuItemButton(
+                  focusNode: _downloadMenuItemFocusNode,
                   leadingIcon: const Icon(Icons.download, size: 18),
                   onPressed: _download,
                   child: const Text('Download'),
@@ -286,13 +296,24 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                 ),
               ],
               child: IconButton(
+                focusNode: _menuButtonFocusNode,
                 icon: const Icon(
                   Icons.more_vert,
                   size: 18,
                   color: AppTheme.darkGray,
                 ),
                 tooltip: 'More options',
-                onPressed: () => _menuController.open(),
+                onPressed: () {
+                  final buttonHadFocus = _menuButtonFocusNode.hasPrimaryFocus;
+                  _menuController.open();
+                  if (buttonHadFocus) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted && _menuController.isOpen) {
+                        _downloadMenuItemFocusNode.requestFocus();
+                      }
+                    });
+                  }
+                },
               ),
             ),
           ],

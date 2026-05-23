@@ -111,7 +111,15 @@ class _PageShellState extends State<PageShell> with TickerProviderStateMixin {
     _scrollVelocity = 0;
   }
 
+  bool _isFocusedInMenu() {
+    final context = FocusManager.instance.primaryFocus?.context;
+    if (context == null) return false;
+    return context.findAncestorWidgetOfExactType<MenuItemButton>() != null ||
+        context.findAncestorWidgetOfExactType<SubmenuButton>() != null;
+  }
+
   KeyEventResult _handleKeyEvent(KeyEvent event) {
+    if (_isFocusedInMenu()) return KeyEventResult.ignored;
     final key = event.logicalKey;
     final isScrollKey = key == LogicalKeyboardKey.arrowDown ||
         key == LogicalKeyboardKey.arrowUp ||
