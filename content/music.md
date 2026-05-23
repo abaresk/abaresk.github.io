@@ -18,7 +18,7 @@ draft: false
 <i>Game over</i>
 
 <audio controls>
-    <source src="/music/game-over-20260426.m4a" type="audio/wav">
+    <source src="/music/game-over-20260426.wav" type="audio/wav">
     Your browser does not support the audio element.
 </audio>
 

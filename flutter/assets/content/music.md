@@ -17,7 +17,7 @@
 
 
 ```audio
-/music/game-over-20260426.m4a
+/music/game-over-20260426.wav
 ```
 
 
