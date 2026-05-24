@@ -191,7 +191,9 @@ class BlogMarkdownBody extends StatelessWidget {
           WidgetSpan(
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
-            child: _FocusableLink(text: text, href: href, style: linkStyle),
+            child: SelectionContainer.disabled(
+              child: _FocusableLink(text: text, href: href, style: linkStyle),
+            ),
           ),
         ];
       case 'strong':
@@ -574,15 +576,18 @@ class _FocusableLinkState extends State<_FocusableLink> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
-        onTap: _open,
-        child: Text(
-          widget.text,
-          style: widget.style.copyWith(
-            decorationColor: _focused ? AppTheme.primary : null,
-            decorationThickness: _focused ? 2.0 : null,
-            backgroundColor:
-                _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: _open,
+          child: Text(
+            widget.text,
+            style: widget.style.copyWith(
+              decorationColor: _focused ? AppTheme.primary : null,
+              decorationThickness: _focused ? 2.0 : null,
+              backgroundColor:
+                  _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
+            ),
           ),
         ),
       ),
