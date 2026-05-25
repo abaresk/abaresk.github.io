@@ -53,6 +53,7 @@ final _mdLinkRe = RegExp(r'\[.+?\]\(.+?\)');
 // blockquote, thematic break). These are left for MarkdownBody.
 bool _isBlockMarkdown(String para) {
   return para.startsWith('#') ||
+      para.startsWith('![') ||
       para.startsWith('>') ||
       para.startsWith('- ') ||
       para.startsWith('* ') ||
