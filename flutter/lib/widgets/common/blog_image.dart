@@ -30,7 +30,7 @@ class _BlogImageState extends State<BlogImage> {
     // Register the native <img> element once. The src uses an absolute path
     // from the web root so it resolves correctly regardless of the current
     // route URL (go_router changes the path segment).
-    final src = '/${widget.assetPath}';
+    final src = '/assets/${widget.assetPath}';
     ui_web.platformViewRegistry.registerViewFactory(_viewId, (_) {
       return web.HTMLImageElement()
         ..src = src
