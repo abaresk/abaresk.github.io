@@ -257,6 +257,18 @@ Future<void> _writePage({
   <script type="application/ld+json">$jsonLd</script>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="manifest" href="/manifest.json">
+  <style>html { opacity: 0; transition: opacity 0.3s ease; }</style>
+  <script>
+    (function() {
+      var t = setTimeout(function() {
+        document.documentElement.style.opacity = '1';
+      }, 10000);
+      window.addEventListener('flutter-first-frame', function() {
+        clearTimeout(t);
+        document.documentElement.style.opacity = '1';
+      });
+    })();
+  </script>
 </head>
 <body>
   <nav>
