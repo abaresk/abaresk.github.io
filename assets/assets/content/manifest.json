@@ -1,0 +1,33 @@
+{
+  "posts": [
+    {
+      "slug": "debugging-gen-3",
+      "title": "Debugging Gen III Pokémon Games",
+      "date": "2021-06-29"
+    }
+  ],
+  "mods": {
+    "pokemon": [
+      {
+        "slug": "trainers-steal-your-pokemon",
+        "title": "Trainers Steal Your Pokémon",
+        "date": "2021-12-29"
+      },
+      {
+        "slug": "2-on-1",
+        "title": "2-on-1 Battles",
+        "date": "2021-06-09"
+      },
+      {
+        "slug": "one-move",
+        "title": "Pokémon Know One Move",
+        "date": "2021-06-01"
+      },
+      {
+        "slug": "lead-ball",
+        "title": "Lead Poké Balls",
+        "date": "2021-05-01"
+      }
+    ]
+  }
+}
