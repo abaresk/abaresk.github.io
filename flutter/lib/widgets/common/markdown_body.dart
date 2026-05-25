@@ -198,11 +198,11 @@ class BlogMarkdownBody extends StatelessWidget {
           ),
         ];
       case 'strong':
-        return _inlineNodesToSpans(
-            el.children ?? [], style.copyWith(fontWeight: FontWeight.bold), styleSheet);
+        return _inlineNodesToSpans(el.children ?? [],
+            style.copyWith(fontWeight: FontWeight.bold), styleSheet);
       case 'em':
-        return _inlineNodesToSpans(
-            el.children ?? [], style.copyWith(fontStyle: FontStyle.italic), styleSheet);
+        return _inlineNodesToSpans(el.children ?? [],
+            style.copyWith(fontStyle: FontStyle.italic), styleSheet);
       case 'code':
         final codeStyle =
             styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
@@ -217,7 +217,7 @@ class BlogMarkdownBody extends StatelessWidget {
       case 'youtube':
         return YouTubeEmbed(videoId: seg.content);
       case 'audio':
-        final assetPath = seg.content.replaceFirst('/music/', 'audio/');
+        final assetPath = seg.content.replaceFirst('/assets/assets/', '');
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: AudioPlayerWidget(assetPath: assetPath),
@@ -550,8 +550,8 @@ class _FocusableLinkState extends State<_FocusableLink> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _focusNode.addListener(
-        () => setState(() => _focused = _focusNode.hasFocus));
+    _focusNode
+        .addListener(() => setState(() => _focused = _focusNode.hasFocus));
   }
 
   @override

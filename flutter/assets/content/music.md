@@ -5,7 +5,7 @@
 
 
 ```audio
-/music/surf.wav
+/assets/assets/audio/surf.wav
 ```
 
 
@@ -17,7 +17,7 @@
 
 
 ```audio
-/music/game-over-20260426.wav
+/assets/assets/audio/game-over-20260426.wav
 ```
 
 
@@ -29,7 +29,7 @@
 
 
 ```audio
-/music/hollow-sound.m4a
+/assets/assets/audio/hollow-sound.m4a
 ```
 
 
