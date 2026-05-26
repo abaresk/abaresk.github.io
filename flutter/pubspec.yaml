@@ -52,6 +52,7 @@ flutter:
     - assets/content/posts/debugging-gen-3/
     - assets/images/
     - assets/audio/
+    - assets/downloads/
 
   fonts:
     - family: Chancery
