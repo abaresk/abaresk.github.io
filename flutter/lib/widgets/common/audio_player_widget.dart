@@ -163,7 +163,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     await FirebaseAnalytics.instance
         .logEvent(name: 'download_audio', parameters: _analyticsParams);
     web.HTMLAnchorElement()
-      ..href = '/assets/${widget.assetPath}'
+      ..href = '/assets/assets/${widget.assetPath}'
       ..download = widget.assetPath.split('/').last
       ..click();
   }
