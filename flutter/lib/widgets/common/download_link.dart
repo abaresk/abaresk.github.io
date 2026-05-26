@@ -23,8 +23,8 @@ class _DownloadLinkState extends State<DownloadLink> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _focusNode.addListener(
-        () => setState(() => _focused = _focusNode.hasFocus));
+    _focusNode
+        .addListener(() => setState(() => _focused = _focusNode.hasFocus));
   }
 
   @override
@@ -40,7 +40,7 @@ class _DownloadLinkState extends State<DownloadLink> {
       'file_label': widget.label,
     });
     web.HTMLAnchorElement()
-      ..href = widget.path
+      ..href = "/assets${widget.path}"
       ..download = widget.label
       ..click();
   }
@@ -76,9 +76,8 @@ class _DownloadLinkState extends State<DownloadLink> {
                 decoration:
                     active ? TextDecoration.underline : TextDecoration.none,
                 decorationColor: AppTheme.accent,
-                backgroundColor: _focused
-                    ? AppTheme.primary.withValues(alpha: 0.08)
-                    : null,
+                backgroundColor:
+                    _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
               ),
             ),
           ),
