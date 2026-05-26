@@ -40,7 +40,7 @@ class _DownloadLinkState extends State<DownloadLink> {
       'file_label': widget.label,
     });
     web.HTMLAnchorElement()
-      ..href = "/assets${widget.path}"
+      ..href = "/assets/assets${widget.path}"
       ..download = widget.label
       ..click();
   }
