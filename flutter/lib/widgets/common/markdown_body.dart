@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web/web.dart' as web;
@@ -62,6 +63,16 @@ bool _isBlockMarkdown(String para) {
       para.startsWith('---') ||
       para.startsWith('===') ||
       para.startsWith('***');
+}
+
+String _decodeHtmlEntities(String text) {
+  return text
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&apos;', "'");
 }
 
 List<_Segment> _parseSegments(String data) {
@@ -158,58 +169,7 @@ class BlogMarkdownBody extends StatelessWidget {
 
   Widget _buildLinkParagraph(
       _LinkParagraphSegment seg, MarkdownStyleSheet styleSheet) {
-    final doc = md.Document(extensionSet: md.ExtensionSet.gitHubWeb);
-    final nodes = doc.parseInline(seg.text);
-    final baseStyle = styleSheet.p ?? _bodyStyle;
-    final spans = _inlineNodesToSpans(nodes, baseStyle, styleSheet);
-    return Padding(
-      padding: styleSheet.pPadding ?? EdgeInsets.zero,
-      child: Text.rich(TextSpan(children: spans, style: baseStyle)),
-    );
-  }
-
-  List<InlineSpan> _inlineNodesToSpans(
-      List<md.Node> nodes, TextStyle style, MarkdownStyleSheet styleSheet) {
-    final spans = <InlineSpan>[];
-    for (final node in nodes) {
-      if (node is md.Text) {
-        spans.add(TextSpan(text: node.text, style: style));
-      } else if (node is md.Element) {
-        spans.addAll(_inlineElementToSpans(node, style, styleSheet));
-      }
-    }
-    return spans;
-  }
-
-  List<InlineSpan> _inlineElementToSpans(
-      md.Element el, TextStyle style, MarkdownStyleSheet styleSheet) {
-    switch (el.tag) {
-      case 'a':
-        final href = el.attributes['href'];
-        final text = el.textContent;
-        final linkStyle = styleSheet.a ?? style;
-        return [
-          WidgetSpan(
-            alignment: PlaceholderAlignment.baseline,
-            baseline: TextBaseline.alphabetic,
-            child: SelectionContainer.disabled(
-              child: _FocusableLink(text: text, href: href, style: linkStyle),
-            ),
-          ),
-        ];
-      case 'strong':
-        return _inlineNodesToSpans(el.children ?? [],
-            style.copyWith(fontWeight: FontWeight.bold), styleSheet);
-      case 'em':
-        return _inlineNodesToSpans(el.children ?? [],
-            style.copyWith(fontStyle: FontStyle.italic), styleSheet);
-      case 'code':
-        final codeStyle =
-            styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
-        return [TextSpan(text: el.textContent, style: codeStyle)];
-      default:
-        return _inlineNodesToSpans(el.children ?? [], style, styleSheet);
-    }
+    return _LinkParagraphWidget(seg: seg, styleSheet: styleSheet);
   }
 
   Widget _buildSpecial(_SpecialSegment seg) {
@@ -278,6 +238,120 @@ class BlogMarkdownBody extends StatelessWidget {
         ),
       ),
       blockquotePadding: const EdgeInsets.only(left: 10, top: 4, bottom: 4),
+    );
+  }
+}
+
+class _LinkParagraphWidget extends StatefulWidget {
+  final _LinkParagraphSegment seg;
+  final MarkdownStyleSheet styleSheet;
+
+  const _LinkParagraphWidget({
+    super.key,
+    required this.seg,
+    required this.styleSheet,
+  });
+
+  @override
+  State<_LinkParagraphWidget> createState() => _LinkParagraphWidgetState();
+}
+
+class _LinkParagraphWidgetState extends State<_LinkParagraphWidget> {
+  late List<InlineSpan> _spans;
+  final List<TapGestureRecognizer> _recognizers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _rebuildSpans();
+  }
+
+  @override
+  void didUpdateWidget(_LinkParagraphWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.seg.text != widget.seg.text) {
+      _disposeRecognizers();
+      _rebuildSpans();
+    }
+  }
+
+  void _disposeRecognizers() {
+    for (final r in _recognizers) {
+      r.dispose();
+    }
+    _recognizers.clear();
+  }
+
+  @override
+  void dispose() {
+    _disposeRecognizers();
+    super.dispose();
+  }
+
+  void _rebuildSpans() {
+    final doc = md.Document(extensionSet: md.ExtensionSet.gitHubWeb);
+    final nodes = doc.parseInline(widget.seg.text);
+    final baseStyle = widget.styleSheet.p ?? _bodyStyle;
+    _spans = _nodesToSpans(nodes, baseStyle);
+  }
+
+  TapGestureRecognizer _makeRecognizer(String? href) {
+    final r = TapGestureRecognizer()
+      ..onTap = () {
+        if (href != null) launchUrl(Uri.parse(href));
+      };
+    _recognizers.add(r);
+    return r;
+  }
+
+  List<InlineSpan> _nodesToSpans(List<md.Node> nodes, TextStyle style) {
+    final spans = <InlineSpan>[];
+    for (final node in nodes) {
+      if (node is md.Text) {
+        spans.add(TextSpan(text: _decodeHtmlEntities(node.text), style: style));
+      } else if (node is md.Element) {
+        spans.addAll(_elementToSpans(node, style));
+      }
+    }
+    return spans;
+  }
+
+  List<InlineSpan> _elementToSpans(md.Element el, TextStyle style) {
+    switch (el.tag) {
+      case 'a':
+        final href = el.attributes['href'];
+        final linkStyle = widget.styleSheet.a ?? style;
+        return [
+          TextSpan(
+            children: _nodesToSpans(el.children ?? [], linkStyle),
+            style: linkStyle,
+            recognizer: _makeRecognizer(href),
+          ),
+        ];
+      case 'strong':
+        return _nodesToSpans(
+            el.children ?? [], style.copyWith(fontWeight: FontWeight.bold));
+      case 'em':
+        return _nodesToSpans(
+            el.children ?? [], style.copyWith(fontStyle: FontStyle.italic));
+      case 'code':
+        final codeStyle =
+            widget.styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
+        return [
+          TextSpan(
+              text: _decodeHtmlEntities(el.textContent), style: codeStyle),
+        ];
+      default:
+        return _nodesToSpans(el.children ?? [], style);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final baseStyle = widget.styleSheet.p ?? _bodyStyle;
+    return Padding(
+      padding: widget.styleSheet.pPadding ?? EdgeInsets.zero,
+      child: Text.rich(TextSpan(children: _spans, style: baseStyle)),
     );
   }
 }
