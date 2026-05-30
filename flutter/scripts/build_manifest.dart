@@ -139,14 +139,20 @@ String transformShortcodes(String body) {
     (m) => '\n\n```audio\n${m.group(1)}\n```\n\n',
   );
 
-  // <p>\n    <a href="PATH" download>\n    LABEL\n    </a>\n</p>
-  // → fenced code block with language "download"
+  // <p> blocks containing <a download> links (directly or inside <span> wrappers)
+  // → one fenced ```download block per link
   body = body.replaceAllMapped(
-    RegExp(
-      r'<p>\s*<a\s+href="([^"]+)"\s+download>\s*([^\n<]+?)\s*</a>\s*</p>',
-      dotAll: true,
-    ),
-    (m) => '```download\n${m.group(1)}|${m.group(2)!.trim()}\n```',
+    RegExp(r'<p>.*?</p>', dotAll: true),
+    (m) {
+      final block = m.group(0)!;
+      if (!block.contains(' download>')) return block;
+      final links = RegExp(
+        r'<a\s+href="([^"]+)"\s+download>\s*([^\n<]+?)\s*</a>',
+        dotAll: true,
+      ).allMatches(block).map((link) =>
+          '```download\n${link.group(1)}|${link.group(2)!.trim()}\n```');
+      return links.isEmpty ? block : '\n\n${links.join('\n\n')}\n\n';
+    },
   );
 
   // Inline HTML: <i>TEXT</i> → *TEXT*, <b>TEXT</b> → **TEXT**, <br> → \n\n
