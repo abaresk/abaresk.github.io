@@ -32,60 +32,66 @@ _Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patc
 
 ## Soft
 
+
+
 ```download
 /downloads/trainers-steal/soft/emerald-trainers-steal.bps|emerald-trainers-steal.bps
 ```
 
-<p>
-    <span>
-        <a href="/downloads/trainers-steal/soft/firered-trainers-steal.bps" download>
-        firered-trainers-steal.bps
-        </a>
-    </span>
-    /
-    <span>
-        <a href="/downloads/trainers-steal/soft/leafgreen-trainers-steal.bps" download>
-        leafgreen-trainers-steal.bps
-        </a>
-    </span>
-</p>
+
+
+
+
+```download
+/downloads/trainers-steal/soft/firered-trainers-steal.bps|firered-trainers-steal.bps
+```
+
+```download
+/downloads/trainers-steal/soft/leafgreen-trainers-steal.bps|leafgreen-trainers-steal.bps
+```
+
+
 
 ## Hard
+
+
 
 ```download
 /downloads/trainers-steal/hard/emerald-trainers-steal.bps|emerald-trainers-steal.bps
 ```
 
-<p>
-    <span>
-        <a href="/downloads/trainers-steal/hard/firered-trainers-steal.bps" download>
-        firered-trainers-steal.bps
-        </a>
-    </span>
-    /
-    <span>
-        <a href="/downloads/trainers-steal/hard/leafgreen-trainers-steal.bps" download>
-        leafgreen-trainers-steal.bps
-        </a>
-    </span>
-</p>
+
+
+
+
+```download
+/downloads/trainers-steal/hard/firered-trainers-steal.bps|firered-trainers-steal.bps
+```
+
+```download
+/downloads/trainers-steal/hard/leafgreen-trainers-steal.bps|leafgreen-trainers-steal.bps
+```
+
+
 
 ## Hardcore
+
+
 
 ```download
 /downloads/trainers-steal/hardcore/emerald-trainers-steal.bps|emerald-trainers-steal.bps
 ```
 
-<p>
-    <span>
-        <a href="/downloads/trainers-steal/hardcore/firered-trainers-steal.bps" download>
-        firered-trainers-steal.bps
-        </a>
-    </span>
-    /
-    <span>
-        <a href="/downloads/trainers-steal/hardcore/leafgreen-trainers-steal.bps" download>
-        leafgreen-trainers-steal.bps
-        </a>
-    </span>
-</p>
+
+
+
+
+```download
+/downloads/trainers-steal/hardcore/firered-trainers-steal.bps|firered-trainers-steal.bps
+```
+
+```download
+/downloads/trainers-steal/hardcore/leafgreen-trainers-steal.bps|leafgreen-trainers-steal.bps
+```
+
+

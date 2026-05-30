@@ -14,14 +14,26 @@ m0E73f2m9EA
 
 *Use [a BPS patcher](https://media.smwcentral.net/Alcaro/bps/) to apply the patch to the ROM file.*
 
+
+
 ```download
 /downloads/one-move/emerald-one-move.bps|emerald-one-move.bps
 ```
+
+
+
+
 
 ```download
 /downloads/one-move/firered-one-move.bps|firered-one-move.bps
 ```
 
+
+
+
+
 ```download
 /downloads/one-move/leafgreen-one-move.bps|leafgreen-one-move.bps
 ```
+
+
