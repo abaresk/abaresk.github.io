@@ -52,7 +52,13 @@ flutter:
     - assets/content/posts/debugging-gen-3/
     - assets/images/
     - assets/audio/
-    - assets/downloads/
+    - assets/downloads/lead-ball/
+    - assets/downloads/2-on-1/multi-target/
+    - assets/downloads/2-on-1/one-target/
+    - assets/downloads/one-move/
+    - assets/downloads/trainers-steal/soft/
+    - assets/downloads/trainers-steal/hard/
+    - assets/downloads/trainers-steal/hardcore/
 
   fonts:
     - family: Chancery
