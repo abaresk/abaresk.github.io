@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web/web.dart' as web;
@@ -242,7 +241,7 @@ class BlogMarkdownBody extends StatelessWidget {
   }
 }
 
-class _LinkParagraphWidget extends StatefulWidget {
+class _LinkParagraphWidget extends StatelessWidget {
   final _LinkParagraphSegment seg;
   final MarkdownStyleSheet styleSheet;
 
@@ -251,58 +250,6 @@ class _LinkParagraphWidget extends StatefulWidget {
     required this.seg,
     required this.styleSheet,
   });
-
-  @override
-  State<_LinkParagraphWidget> createState() => _LinkParagraphWidgetState();
-}
-
-class _LinkParagraphWidgetState extends State<_LinkParagraphWidget> {
-  late List<InlineSpan> _spans;
-  final List<TapGestureRecognizer> _recognizers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _rebuildSpans();
-  }
-
-  @override
-  void didUpdateWidget(_LinkParagraphWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.seg.text != widget.seg.text) {
-      _disposeRecognizers();
-      _rebuildSpans();
-    }
-  }
-
-  void _disposeRecognizers() {
-    for (final r in _recognizers) {
-      r.dispose();
-    }
-    _recognizers.clear();
-  }
-
-  @override
-  void dispose() {
-    _disposeRecognizers();
-    super.dispose();
-  }
-
-  void _rebuildSpans() {
-    final doc = md.Document(extensionSet: md.ExtensionSet.gitHubWeb);
-    final nodes = doc.parseInline(widget.seg.text);
-    final baseStyle = widget.styleSheet.p ?? _bodyStyle;
-    _spans = _nodesToSpans(nodes, baseStyle);
-  }
-
-  TapGestureRecognizer _makeRecognizer(String? href) {
-    final r = TapGestureRecognizer()
-      ..onTap = () {
-        if (href != null) launchUrl(Uri.parse(href));
-      };
-    _recognizers.add(r);
-    return r;
-  }
 
   List<InlineSpan> _nodesToSpans(List<md.Node> nodes, TextStyle style) {
     final spans = <InlineSpan>[];
@@ -320,12 +267,18 @@ class _LinkParagraphWidgetState extends State<_LinkParagraphWidget> {
     switch (el.tag) {
       case 'a':
         final href = el.attributes['href'];
-        final linkStyle = widget.styleSheet.a ?? style;
+        final linkStyle = styleSheet.a ?? style;
         return [
-          TextSpan(
-            children: _nodesToSpans(el.children ?? [], linkStyle),
-            style: linkStyle,
-            recognizer: _makeRecognizer(href),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.baseline,
+            baseline: TextBaseline.alphabetic,
+            child: SelectionContainer.disabled(
+              child: _FocusableLink(
+                children: _nodesToSpans(el.children ?? [], linkStyle),
+                href: href,
+                style: linkStyle,
+              ),
+            ),
           ),
         ];
       case 'strong':
@@ -336,10 +289,9 @@ class _LinkParagraphWidgetState extends State<_LinkParagraphWidget> {
             el.children ?? [], style.copyWith(fontStyle: FontStyle.italic));
       case 'code':
         final codeStyle =
-            widget.styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
+            styleSheet.code ?? style.copyWith(fontFamily: 'monospace');
         return [
-          TextSpan(
-              text: _decodeHtmlEntities(el.textContent), style: codeStyle),
+          TextSpan(text: _decodeHtmlEntities(el.textContent), style: codeStyle),
         ];
       default:
         return _nodesToSpans(el.children ?? [], style);
@@ -348,10 +300,13 @@ class _LinkParagraphWidgetState extends State<_LinkParagraphWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = widget.styleSheet.p ?? _bodyStyle;
+    final doc = md.Document(extensionSet: md.ExtensionSet.gitHubWeb);
+    final nodes = doc.parseInline(seg.text);
+    final baseStyle = styleSheet.p ?? _bodyStyle;
+    final spans = _nodesToSpans(nodes, baseStyle);
     return Padding(
-      padding: widget.styleSheet.pPadding ?? EdgeInsets.zero,
-      child: Text.rich(TextSpan(children: _spans, style: baseStyle)),
+      padding: styleSheet.pPadding ?? EdgeInsets.zero,
+      child: Text.rich(TextSpan(children: spans, style: baseStyle)),
     );
   }
 }
@@ -602,12 +557,12 @@ class _HighlightedCodeState extends State<HighlightedCode> {
 }
 
 class _FocusableLink extends StatefulWidget {
-  final String text;
+  final List<InlineSpan> children;
   final String? href;
   final TextStyle style;
 
   const _FocusableLink({
-    required this.text,
+    required this.children,
     required this.href,
     required this.style,
   });
@@ -655,13 +610,15 @@ class _FocusableLinkState extends State<_FocusableLink> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: _open,
-          child: Text(
-            widget.text,
-            style: widget.style.copyWith(
-              decorationColor: _focused ? AppTheme.primary : null,
-              decorationThickness: _focused ? 2.0 : null,
-              backgroundColor:
-                  _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
+          child: Text.rich(
+            TextSpan(
+              children: widget.children,
+              style: widget.style.copyWith(
+                decorationColor: _focused ? AppTheme.primary : null,
+                decorationThickness: _focused ? 2.0 : null,
+                backgroundColor:
+                    _focused ? AppTheme.primary.withValues(alpha: 0.08) : null,
+              ),
             ),
           ),
         ),
