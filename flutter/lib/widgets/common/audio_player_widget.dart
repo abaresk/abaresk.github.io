@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:web/web.dart' as web;
 import '../../theme/app_theme.dart';
+import 'audio_session_manager.dart';
 
 enum ProgressMilestone {
   p25(25),
@@ -24,7 +25,8 @@ class AudioPlayerWidget extends StatefulWidget {
   State<AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
 }
 
-class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
+class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
+    implements AudioPlaybackController {
   final _player = AudioPlayer();
   final _focusNode = FocusNode();
   final _playButtonFocusNode = FocusNode();
@@ -62,6 +64,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   void dispose() {
+    AudioSessionManager.instance.clearActive(this);
     _player.dispose();
     _focusNode.dispose();
     _playButtonFocusNode.dispose();
@@ -70,16 +73,37 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     super.dispose();
   }
 
+  Future<void> _play() async {
+    await FirebaseAnalytics.instance
+        .logEvent(name: 'play_audio', parameters: _analyticsParams);
+    final wasCompleted = _state == PlayerState.completed;
+    await _player.resume();
+    if (wasCompleted) {
+      await _player.seek(Duration.zero);
+    }
+    await _player.setPlaybackRate(_speed);
+  }
+
+  Future<void> _pause() async {
+    await _player.pause();
+  }
+
   Future<void> _togglePlayPause() async {
     if (_state == PlayerState.playing) {
-      await _player.pause();
+      await _pause();
     } else {
-      await FirebaseAnalytics.instance
-          .logEvent(name: 'play_audio', parameters: _analyticsParams);
-      await _player.resume();
-      await _player.setPlaybackRate(_speed);
+      await _play();
     }
   }
+
+  @override
+  void play() => _play();
+
+  @override
+  void pause() => _pause();
+
+  @override
+  void stop() => _player.stop();
 
   KeyEventResult _handleKeyEvent(KeyEvent event) {
     if ((event is! KeyDownEvent && event is! KeyRepeatEvent) ||
@@ -128,6 +152,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         _position = _duration;
       }
     });
+    if (state == PlayerState.playing) {
+      AudioSessionManager.instance.setActive(this);
+    }
+    AudioSessionManager.instance.updatePlaybackState(this, state);
   }
 
   void _onPositionChanged(Duration position) {
