@@ -37,6 +37,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   bool _wasPlaying = false;
+  bool _resettingAfterCompletion = false;
+  bool _unstarted = true;
   double _speed = 1.0;
   final _loggedMilestones = <ProgressMilestone>{};
 
@@ -146,6 +148,14 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       };
 
   void _onPlayerStateChanged(PlayerState state) {
+    if (_resettingAfterCompletion) {
+      if (state == PlayerState.paused) {
+        _resettingAfterCompletion = false;
+      } else {
+        return;
+      }
+    }
+
     setState(() {
       _state = state;
       if (state == PlayerState.completed) {
@@ -153,12 +163,24 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       }
     });
     if (state == PlayerState.playing) {
+      _unstarted = false;
       AudioSessionManager.instance.setActive(this);
+    }
+    if (state == PlayerState.completed) {
+      _resettingAfterCompletion = true;
+      _unstarted = true;
+      _player.resume().then((_) async {
+        await _player.seek(Duration.zero);
+        await _player.pause();
+      }).catchError((_) {
+        _resettingAfterCompletion = false;
+      });
     }
     AudioSessionManager.instance.updatePlaybackState(this, state);
   }
 
   void _onPositionChanged(Duration position) {
+    if (_resettingAfterCompletion) return;
     setState(() => _position = position);
     if (_duration <= Duration.zero) return;
 
@@ -262,8 +284,9 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
                 style: GoogleFonts.literata(
                     fontSize: 12,
                     fontFeatures: [const FontFeature.tabularFigures()],
-                    color: [PlayerState.playing, PlayerState.paused]
-                            .contains(_state)
+                    color: !_unstarted &&
+                            [PlayerState.playing, PlayerState.paused]
+                                .contains(_state)
                         ? AppTheme.primary
                         : AppTheme.darkGray),
               ),
