@@ -5,7 +5,7 @@
 
 
 ```audio
-/assets/assets/audio/surf.wav
+/assets/assets/audio/surf.m4a
 ```
 
 
@@ -17,7 +17,7 @@
 
 
 ```audio
-/assets/assets/audio/game-over-20260426.wav
+/assets/assets/audio/game-over-20260426.m4a
 ```
 
 

@@ -39,6 +39,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
   bool _wasPlaying = false;
   bool _resettingAfterCompletion = false;
   bool _unstarted = true;
+  bool _sourceReady = false;
+  bool _playRequested = false;
   double _speed = 1.0;
   final _loggedMilestones = <ProgressMilestone>{};
 
@@ -59,10 +61,19 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       }
     });
     _player.onDurationChanged.listen((d) {
-      if (mounted) setState(() => _duration = d);
+      if (mounted) {
+        setState(() {
+          _duration = d;
+          _sourceReady = true;
+        });
+      }
     });
-    _player.setSourceAsset(widget.assetPath);
+    _player.setSourceUrl(_assetUrl).catchError((Object e, StackTrace st) {
+      debugPrint('Failed to prepare audio source "${widget.assetPath}": $e');
+    });
   }
+
+  String get _assetUrl => '/assets/assets/${widget.assetPath}';
 
   @override
   void dispose() {
@@ -79,6 +90,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
     await FirebaseAnalytics.instance
         .logEvent(name: 'play_audio', parameters: _analyticsParams);
     final wasCompleted = _state == PlayerState.completed;
+    setState(() => _playRequested = true);
     await _player.resume();
     if (wasCompleted) {
       await _player.seek(Duration.zero);
@@ -213,7 +225,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
     await FirebaseAnalytics.instance
         .logEvent(name: 'download_audio', parameters: _analyticsParams);
     web.HTMLAnchorElement()
-      ..href = '/assets/assets/${widget.assetPath}'
+      ..href = _assetUrl
       ..download = widget.assetPath.split('/').last
       ..click();
   }
@@ -236,7 +248,13 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
           children: [
             IconButton(
               focusNode: _playButtonFocusNode,
-              icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+              icon: (_playRequested && !_sourceReady)
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(isPlaying ? Icons.pause : Icons.play_arrow),
               color: AppTheme.primary,
               onPressed: () async {
                 await _togglePlayPause();

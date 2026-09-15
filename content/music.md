@@ -9,7 +9,7 @@ draft: false
 <i>Surf theme</i>
 
 <audio controls>
-    <source src="/assets/assets/audio/surf.wav" type="audio/wav">
+    <source src="/assets/assets/audio/surf.m4a" type="audio/mp4">
     Your browser does not support the audio element.
 </audio>
 
@@ -18,7 +18,7 @@ draft: false
 <i>Game over</i>
 
 <audio controls>
-    <source src="/assets/assets/audio/game-over-20260426.wav" type="audio/wav">
+    <source src="/assets/assets/audio/game-over-20260426.m4a" type="audio/mp4">
     Your browser does not support the audio element.
 </audio>
 
@@ -27,6 +27,6 @@ draft: false
 <i>Hollow sound</i>
 
 <audio controls>
-    <source src="/assets/assets/audio/hollow-sound.m4a" type="audio/wav">
+    <source src="/assets/assets/audio/hollow-sound.m4a" type="audio/mp4">
     Your browser does not support the audio element.
 </audio>
